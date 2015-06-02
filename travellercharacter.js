@@ -29,7 +29,7 @@ function intToHex(n) {
 }
 
 var traveller = {
-    name: 'Alexander jamison',
+    name: 'Alexander Jamison',
     service: 'Merchant',
     rank: 'Captain',
     age: '38',
@@ -44,21 +44,32 @@ var traveller = {
         social: '9',
     },
     rollAttributes: function () {
-        this.attributes.strength = roll(2);
-        this.attributes.dexterity = roll(2);
-        this.attributes.endurance = roll(2);
-        this.attributes.intelligence = roll(2);
-        this.attributes.education = roll(2);
-        this.attributes.social = roll(2);
+        this.attributes.strength = intToHex(roll(2));
+        this.attributes.dexterity = intToHex(roll(2));
+        this.attributes.endurance = intToHex(roll(2));
+        this.attributes.intelligence = intToHex(roll(2));
+        this.attributes.education = intToHex(roll(2));
+        this.attributes.social = intToHex(roll(2));
     },
+    getAttrString: function () {
+        return this.attributes.strength.toString()
+            + this.attributes.dexterity.toString()
+            + this.attributes.endurance.toString()
+            + this.attributes.intelligence.toString()
+            + this.attributes.education.toString()
+            + this.attributes.social.toString();
+    },
+    toString: function () {
+        return this.name + '    ' + this.getAttrString() + '    Age ' 
+            + this.age + "\n" + this.terms + ' terms        Cr' + this.credits;
+    }
 };
 
 var t = Object.create(traveller);
 
 function test() {
     t.rollAttributes();
-    console.log(intToHex(11));
-    console.log(t.attributes.strength);
+    console.log(t.toString());
 }
 
 test();
