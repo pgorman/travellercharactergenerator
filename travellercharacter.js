@@ -28,6 +28,10 @@ function intToHex(n) {
     }
 }
 
+function numCommaSep(n) {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 var traveller = {
     name: 'Alexander Jamison',
     service: 'Merchant',
@@ -61,7 +65,8 @@ var traveller = {
     },
     toString: function () {
         return this.name + '    ' + this.getAttrString() + '    Age ' 
-            + this.age + "\n" + this.terms + ' terms        Cr' + this.credits;
+            + this.age + "\n" + this.terms + ' terms        Cr' 
+            + numCommaSep(this.credits);
     }
 };
 
