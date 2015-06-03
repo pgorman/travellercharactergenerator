@@ -1,4 +1,5 @@
 function roll(rolls) {
+    // Return total of six-sided dice rolls.
     var total = 0;
     for (var i = 0; i < rolls; i++) {
         total += Math.floor(Math.random() * 6 + 1);
@@ -6,29 +7,18 @@ function roll(rolls) {
     return total;
 }
 
-function intToHex(n) {
-    // Accept integer 1-16, return hexadecimal 0-F character.
-    switch(n) {
-        case 1: return '0';
-        case 2: return '1';
-        case 3: return '2';
-        case 4: return '3';
-        case 5: return '4';
-        case 6: return '5';
-        case 7: return '6';
-        case 8: return '7';
-        case 9: return '8';
-        case 10: return '9';
-        case 11: return 'A';
-        case 12: return 'B';
-        case 13: return 'C';
-        case 14: return 'D';
-        case 15: return 'E';
-        case 16: return 'F';
-    }
+function decToHex(n) {
+    // Convert decimal number to hexadecimal.
+    return n.toString(16).toUpperCase();
+}
+
+function hexToDec(n) {
+    // Convert hexadecimal to decimal.
+    return parseInt(n, 16);
 }
 
 function numCommaSep(n) {
+    // Format numbers like 1,000,000.
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
@@ -36,36 +26,36 @@ var traveller = {
     name: 'Alexander Jamison',
     service: 'Merchant',
     rank: 'Captain',
-    age: '38',
+    age: 18,
     terms: 5,
     credits: 31200,
     attributes: {
-        strength: '7',
-        dexterity: '7',
-        endurance: '9',
-        intelligence: 'C',
-        education: '9',
-        social: '9',
+        strength: roll(2),
+        dexterity: roll(2),
+        endurance: roll(2),
+        intelligence: roll(2),
+        education: roll(2),
+        social: roll(2),
     },
     rollAttributes: function () {
-        this.attributes.strength = intToHex(roll(2));
-        this.attributes.dexterity = intToHex(roll(2));
-        this.attributes.endurance = intToHex(roll(2));
-        this.attributes.intelligence = intToHex(roll(2));
-        this.attributes.education = intToHex(roll(2));
-        this.attributes.social = intToHex(roll(2));
+        this.attributes.strength = roll(2);
+        this.attributes.dexterity = roll(2);
+        this.attributes.endurance = roll(2);
+        this.attributes.intelligence = roll(2);
+        this.attributes.education = roll(2);
+        this.attributes.social = roll(2);
     },
     getAttrString: function () {
-        return this.attributes.strength.toString()
-            + this.attributes.dexterity.toString()
-            + this.attributes.endurance.toString()
-            + this.attributes.intelligence.toString()
-            + this.attributes.education.toString()
-            + this.attributes.social.toString();
+        return decToHex(this.attributes.strength)
+            + decToHex(this.attributes.dexterity)
+            + decToHex(this.attributes.endurance)
+            + decToHex(this.attributes.intelligence)
+            + decToHex(this.attributes.education)
+            + decToHex(this.attributes.social);
     },
     toString: function () {
-        return this.name + '    ' + this.getAttrString() + '    Age ' 
-            + this.age + "\n" + this.terms + ' terms        Cr' 
+        return this.name + '    ' + this.getAttrString() + '    Age '
+            + this.age + "\n" + this.terms + ' terms                Cr'
             + numCommaSep(this.credits);
     }
 };
