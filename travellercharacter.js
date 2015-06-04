@@ -1,3 +1,7 @@
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
 function roll(rolls) {
     // Return total of six-sided dice rolls.
     var total = 0;
@@ -29,6 +33,7 @@ var traveller = {
     age: 18,
     terms: 5,
     credits: 31200,
+    history: [],
     attributes: {
         strength: roll(2),
         dexterity: roll(2),
@@ -37,7 +42,7 @@ var traveller = {
         education: roll(2),
         social: roll(2),
     },
-    rollAttributes: function () {
+    setAttributes: function () {
         this.attributes.strength = roll(2);
         this.attributes.dexterity = roll(2);
         this.attributes.endurance = roll(2);
@@ -53,8 +58,56 @@ var traveller = {
             + decToHex(this.attributes.education)
             + decToHex(this.attributes.social);
     },
+    setService: function () {
+        // In which service should we try to enlist?
+        var serviceScores = {
+            navy: 0,
+            marines: 0,
+            army: 0,
+            scouts: 0,
+            merchants: 0,
+            other: 2
+        };
+        if (this.attributes.strength > 6) {
+            serviceScores.marines += 2;
+            serviceScores.scouts += 2;
+            serviceScores.merchants += 1;
+        }
+        if (this.attributes.dexterity > 5) {
+            serviceScores.army += 1;
+        }
+        if (this.attributes.endurance > 4) {
+            serviceScores.army += 2;
+        }
+        if (this.attributes.intelligence > 5) {
+            serviceScores.navy += 1;
+            serviceScores.marines += 1;
+            serviceScores.scouts += 1;
+            serviceScores.merchants += 2;
+        }
+        if (this.attributes.education > 8) {
+            serviceScores.navy += 2;
+        }
+        var highestScore = 0;
+        var preferredService = 'other';
+        for (var s in serviceScores) {
+            if (serviceScores[s] > highestScore) {
+                preferredService = s;
+                highestScore = serviceScores[s];
+            }
+            if ((serviceScores[s] == highestScore) && (roll(1) > 4)) {
+                preferredService = s;
+            }
+        }
+        // Temporary for testing:
+        this.service = preferredService;
+        this.history.push('Attempted to enlist in the '
+            + preferredService.capitalize() + ' service.');
+        console.log(serviceScores);
+    },
     toString: function () {
-        return this.name + '    ' + this.getAttrString() + '    Age '
+        return this.service + ' ' + this.rank + ' ' + this.name + '    ' 
+            + this.getAttrString() + '    Age '
             + this.age + "\n" + this.terms + ' terms                Cr'
             + numCommaSep(this.credits);
     }
@@ -63,8 +116,12 @@ var traveller = {
 var t = Object.create(traveller);
 
 function test() {
-    t.rollAttributes();
+    t.setAttributes();
+    t.setService();
     console.log(t.toString());
+    for (var i = 0; i < t.history.length; i++) {
+        console.log(t.history[i]);
+    }
 }
 
 test();
