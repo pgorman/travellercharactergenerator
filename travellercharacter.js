@@ -134,6 +134,77 @@ var traveller = {
             this.history.push('Drafted into the ' + this.service.cap() + '.')
         }
     },
+    deceased: false,
+    doServiceTerm: function() {
+        function checkSurvival() {
+            var survivalRoll = roll(2);
+            console.log(this.service);
+            switch(this.service) {
+                case('navy'):
+                    if (survivalRoll > 4) {
+                        return true;
+                    } else if ((survivalRoll > 2) && (this.intelligence > 6)) {
+                        return true;
+                    } else {
+                        this.history.push('Killed in the line of duty.');
+                        this.deceased = true;
+                        return false;
+                    }
+                case('marines'):
+                    if (survivalRoll > 5) {
+                        return true;
+                    } else if ((survivalRoll > 4) && (this.endurance > 7)) {
+                        return true;
+                    } else {
+                        this.history.push('Killed in the line of duty.');
+                        this.deceased = true;
+                        return false;
+                    }
+                case('army'):
+                    if (survivalRoll > 4) {
+                        return true;
+                    } else if ((survivalRoll > 2) && (this.education > 5)) {
+                        return true;
+                    } else {
+                        this.history.push('Killed in the line of duty.');
+                        this.deceased = true;
+                        return false;
+                    }
+                case('scouts'):
+                    if (survivalRoll > 6) {
+                        return true;
+                    } else if ((survivalRoll > 4) && (this.endurance > 8)) {
+                        return true;
+                    } else {
+                        this.history.push('Killed in the line of duty.');
+                        this.deceased = true;
+                        return false;
+                    }
+                case('merchants'):
+                    if (survivalRoll > 4) {
+                        return true;
+                    } else if ((survivalRoll > 2) && (this.intelligence > 6)) {
+                        return true;
+                    } else {
+                        this.history.push('Killed in the line of duty.');
+                        this.deceased = true;
+                        return false;
+                    }
+                case('other'):
+                    if (survivalRoll > 4) {
+                        return true;
+                    } else if ((survivalRoll > 2) && (this.intelligence > 8)) {
+                        return true;
+                    } else {
+                        this.history.push('Killed in the line of duty.');
+                        this.deceased = true;
+                        return false;
+                    }
+            }
+        }
+        console.log(this.deceased);
+        checkSurvival();
+    },
     toString: function () {
         return this.service.cap() + ' ' + this.rank + ' ' + this.name + '    ' 
             + this.getAttrString() + '    Age '
@@ -147,6 +218,8 @@ var t = Object.create(traveller);
 function test() {
     t.setAttributes();
     t.setService();
+    t.doServiceTerm();
+    console.log(t.deceased);
     console.log(t.toString());
     for (var i = 0; i < t.history.length; i++) {
         console.log(t.history[i]);
