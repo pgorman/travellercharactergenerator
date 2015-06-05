@@ -1,4 +1,4 @@
-String.prototype.capitalize = function() {
+String.prototype.cap = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
@@ -63,7 +63,7 @@ var traveller = {
         var serviceScores = {
             navy: 0,
             marines: 0,
-            army: 0,
+            arm: 0,
             scouts: 0,
             merchants: 0,
             other: 2
@@ -99,14 +99,43 @@ var traveller = {
                 preferredService = s;
             }
         }
-        // Temporary for testing:
+        // Attempt to enlist.
         this.service = preferredService;
+        var enlistmentThrows = {
+            navy: 8,
+            marines: 9,
+            army: 5,
+            scouts: 7,
+            merchants: 7,
+            other: 3
+        };
         this.history.push('Attempted to enlist in the '
-            + preferredService.capitalize() + ' service.');
-        console.log(serviceScores);
+            + preferredService.cap() + '.');
+        if ((roll(2) + serviceScores[preferredService]) >= enlistmentThrows[preferredService]) {
+            this.history.push('Enlisted accepted.');
+        } else {
+            this.history.push('Enlistment denied.');
+            this.service = function () {
+                switch(roll(1)) {
+                    case(1):
+                        return 'navy';
+                    case(2):
+                        return 'marines';
+                    case(3):
+                        return 'army';
+                    case(4):
+                        return 'scouts';
+                    case(5):
+                        return 'merchants';
+                    case(6):
+                        return 'other';
+                }
+            }();
+            this.history.push('Drafted into the ' + this.service.cap() + '.')
+        }
     },
     toString: function () {
-        return this.service + ' ' + this.rank + ' ' + this.name + '    ' 
+        return this.service.cap() + ' ' + this.rank + ' ' + this.name + '    ' 
             + this.getAttrString() + '    Age '
             + this.age + "\n" + this.terms + ' terms                Cr'
             + numCommaSep(this.credits);
