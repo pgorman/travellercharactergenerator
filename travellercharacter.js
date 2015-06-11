@@ -26,6 +26,35 @@ function numCommaSep(n) {
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
+var navy = {
+    serviceName: 'Navy',
+    memberName: 'Navy',
+    enlistmentThrow: 8,
+    enlistmentDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence > 7) { dm += 1; }
+        if (attributes.education > 8) { dm += 1; }
+        return dm;
+    },
+    checkSurvival: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence > 6) { dm += 1; }
+        if ((roll(2) + dm) > 4) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    ranks: {
+        1: 'Ensign',
+        2: 'Lieutenant',
+        3: 'Lt Cmdr',
+        4: 'Commander',
+        5: 'Captain',
+        6: 'Admiral'
+    }
+};
+
 var traveller = {
     name: 'Alexander Jamison',
     service: 'Merchant',
