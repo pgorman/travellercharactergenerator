@@ -47,14 +47,14 @@ var service = {
         enlistmentThrow: 8,
         enlistmentDM: function (attributes) {
             var dm = 0;
-            if (attributes.intelligence > 7) { dm += 1; }
-            if (attributes.education > 8) { dm += 1; }
+            if (attributes.intelligence >= 8) { dm += 1; }
+            if (attributes.education >= 9) { dm += 2; }
             return dm;
         },
         checkSurvival: function (attributes) {
             var dm = 0;
-            if (attributes.intelligence > 6) { dm += 1; }
-            if ((roll(2) + dm) > 4) {
+            if (attributes.intelligence >= 7) { dm += 2; }
+            if ((roll(2) + dm) >= 5) {
                 return true;
             } else {
                 return false;
@@ -67,8 +67,47 @@ var service = {
             4: 'Commander',
             5: 'Captain',
             6: 'Admiral'
+        },
+        checkCommission: function(attributes) {
+            var dm = 0;
+            if (attributes.social >= 9) { dm += 2; }
+            if ((roll(2) + dm) >= 10) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+    marines: {
+        serviceName: 'Marines', // like "in the Navy"
+        memberName: 'Marine', // like "Navy Admiral Nelson"
+        adjName: "Marines", // like "the Naval service"
+        enlistmentThrow: 9,
+        enlistmentDM: function (attributes) {
+            var dm = 0;
+            if (attributes.intelligence >= 8) { dm += 1; }
+            if (attributes.strength >= 8) { dm += 2; }
+            return dm;
+        },
+        checkSurvival: function (attributes) {
+            var dm = 0;
+            if (attributes.endurance >= 8) { dm += 2; }
+            if ((roll(2) + dm) >= 6) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        ranks: {
+            1: 'Lieutenant',
+            2: 'Captain',
+            3: 'Force Comdr',
+            4: 'Lt Colonel',
+            5: 'Colonel',
+            6: 'Brigadier'
         }
     }
+
 };
 
 var traveller = {
