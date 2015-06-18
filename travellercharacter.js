@@ -1,4 +1,13 @@
-String.prototype.cap = function() {
+function arnd(a) {
+    // Return random element of array a.
+    var i = Math.floor(Math.random() * (a.length));
+    if (typeof a[i] === 'function') {
+        return a[i]();
+    }   
+    return a[i];
+}
+
+String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
@@ -26,32 +35,39 @@ function numCommaSep(n) {
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-var navy = {
-    serviceName: 'Navy',
-    memberName: 'Navy',
-    enlistmentThrow: 8,
-    enlistmentDM: function (attributes) {
-        var dm = 0;
-        if (attributes.intelligence > 7) { dm += 1; }
-        if (attributes.education > 8) { dm += 1; }
-        return dm;
+var service = {
+    services: ['navy', 'marines', 'army', 'scouts', 'merchants', 'other'],
+    draft: function () {
+        return arnd(this.services);
     },
-    checkSurvival: function (attributes) {
-        var dm = 0;
-        if (attributes.intelligence > 6) { dm += 1; }
-        if ((roll(2) + dm) > 4) {
-            return true;
-        } else {
-            return false;
+    navy: {
+        serviceName: 'Navy', // like "in the Navy"
+        memberName: 'Navy', // like "Navy Admiral Nelson"
+        adjName: "Naval", // like "the Naval service"
+        enlistmentThrow: 8,
+        enlistmentDM: function (attributes) {
+            var dm = 0;
+            if (attributes.intelligence > 7) { dm += 1; }
+            if (attributes.education > 8) { dm += 1; }
+            return dm;
+        },
+        checkSurvival: function (attributes) {
+            var dm = 0;
+            if (attributes.intelligence > 6) { dm += 1; }
+            if ((roll(2) + dm) > 4) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        ranks: {
+            1: 'Ensign',
+            2: 'Lieutenant',
+            3: 'Lt Cmdr',
+            4: 'Commander',
+            5: 'Captain',
+            6: 'Admiral'
         }
-    },
-    ranks: {
-        1: 'Ensign',
-        2: 'Lieutenant',
-        3: 'Lt Cmdr',
-        4: 'Commander',
-        5: 'Captain',
-        6: 'Admiral'
     }
 };
 
@@ -139,7 +155,7 @@ var traveller = {
             other: 3
         };
         this.history.push('Attempted to enlist in the '
-            + preferredService.cap() + '.');
+            + preferredService.capitalize() + '.');
         if ((roll(2) + serviceScores[preferredService]) >= enlistmentThrows[preferredService]) {
             this.history.push('Enlisted accepted.');
         } else {
@@ -160,7 +176,7 @@ var traveller = {
                         return 'other';
                 }
             }();
-            this.history.push('Drafted into the ' + this.service.cap() + '.')
+            this.history.push('Drafted into the ' + this.service.capitalize() + '.')
         }
     },
     deceased: false,
@@ -235,8 +251,8 @@ var traveller = {
         checkSurvival();
     },
     toString: function () {
-        return this.service.cap() + ' ' + this.rank + ' ' + this.name + '    ' 
-            + this.getAttrString() + '    Age '
+        return this.service.capitalize() + ' ' + this.rank + ' ' + this.name 
+            + '    ' + this.getAttrString() + '    Age '
             + this.age + "\n" + this.terms + ' terms                Cr'
             + numCommaSep(this.credits);
     }
