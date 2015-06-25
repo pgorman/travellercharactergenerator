@@ -1,14 +1,16 @@
+function travellerCharacterGenerator(output, count, testmode) {
+
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
 function arnd(a) {
     // Return random element of array a.
     var i = Math.floor(Math.random() * (a.length));
     if (typeof a[i] === 'function') {
         return a[i]();
-    }   
+    }
     return a[i];
-}
-
-String.prototype.capitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
 function roll(rolls) {
@@ -36,7 +38,10 @@ function numCommaSep(n) {
 }
 
 var service = {
-    services: ['navy', 'marines', 'army', 'scouts', 'merchants', 'other'],
+//
+//    services: ['navy', 'marines', 'army', 'scouts', 'merchants', 'other'],
+//
+    services: ['navy', 'marines'],
     draft: function () {
         return arnd(this.services);
     },
@@ -310,4 +315,13 @@ function test() {
     }
 }
 
-test();
+if ((testmode == 'test') || (testmode == true)) {
+    var TEST = true;
+    test();
+} else {
+    var TEST = false;
+}
+
+} // End wrapper function travellerCharacterGenerator()
+
+travellerCharacterGenerator('text', '1', 'test');
