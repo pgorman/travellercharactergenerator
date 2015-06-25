@@ -1,6 +1,7 @@
 function travellerCharacterGenerator(output, count, testmode) {
 
 String.prototype.capitalize = function() {
+    // Accept "word" and return "Word".
     return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
@@ -35,6 +36,10 @@ function hexToDec(n) {
 function numCommaSep(n) {
     // Format numbers like 1,000,000.
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function generateName() {
+    return 'Alexander Jamison';
 }
 
 var service = {
@@ -86,7 +91,7 @@ var service = {
     marines: {
         serviceName: 'Marines', // like "in the Navy"
         memberName: 'Marine', // like "Navy Admiral Nelson"
-        adjName: "Marines", // like "the Naval service"
+        adjName: 'Marines', // like "the Naval service"
         enlistmentThrow: 9,
         enlistmentDM: function (attributes) {
             var dm = 0;
@@ -111,12 +116,125 @@ var service = {
             5: 'Colonel',
             6: 'Brigadier'
         }
-    }
-
+    },
+    army: {
+        serviceName: 'Army', // like "in the Navy"
+        memberName: 'Army', // like "Navy Admiral Nelson"
+        adjName: 'Army', // like "the Naval service"
+        enlistmentThrow: 5,
+        enlistmentDM: function (attributes) {
+            var dm = 0;
+            if (attributes.dexterity >= 6) { dm += 1; }
+            if (attributes.endurance >= 5) { dm += 2; }
+            return dm;
+        },
+        checkSurvival: function (attributes) {
+            var dm = 0;
+            if (attributes.education >= 5) { dm += 2; }
+            if ((roll(2) + dm) >= 5) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        ranks: {
+            1: 'Lieutenant',
+            2: 'Captain',
+            3: 'Major',
+            4: 'Lt Colonel',
+            5: 'Colonel',
+            6: 'General'
+        }
+    },
+    scouts: {
+        serviceName: 'Scouts', // like "in the Navy"
+        memberName: 'Scout', // like "Navy Admiral Nelson"
+        adjName: 'Scout', // like "the Naval service"
+        enlistmentThrow: 7,
+        enlistmentDM: function (attributes) {
+            var dm = 0;
+            if (attributes.intelligence >= 6) { dm += 1; }
+            if (attributes.strength >= 8) { dm += 2; }
+            return dm;
+        },
+        checkSurvival: function (attributes) {
+            var dm = 0;
+            if (attributes.endurance >= 9) { dm += 2; }
+            if ((roll(2) + dm) >= 7) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        ranks: {
+            1: '',
+            2: '',
+            3: '',
+            4: '',
+            5: '',
+            6: ''
+        }
+    },
+    merchants: {
+        serviceName: 'Merchants', // like "in the Navy"
+        memberName: 'Merchant', // like "Navy Admiral Nelson"
+        adjName: 'Merchant', // like "the Naval service"
+        enlistmentThrow: 7,
+        enlistmentDM: function (attributes) {
+            var dm = 0;
+            if (attributes.strength >= 7) { dm += 1; }
+            if (attributes.intelligence >= 6) { dm += 2; }
+            return dm;
+        },
+        checkSurvival: function (attributes) {
+            var dm = 0;
+            if (attributes.intelligence >= 7) { dm += 2; }
+            if ((roll(2) + dm) >= 5) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        ranks: {
+            1: '4th Officer',
+            2: '3rd Officer',
+            3: '2nd Officer',
+            4: '1st Officer',
+            5: 'Captain',
+            6: ''
+        }
+    },
+    other: {
+        serviceName: 'Other', // like "in the Navy"
+        memberName: 'Other', // like "Navy Admiral Nelson"
+        adjName: 'Other', // like "the Naval service"
+        enlistmentThrow: 3,
+        enlistmentDM: function (attributes) {
+            var dm = 0;
+            return dm;
+        },
+        checkSurvival: function (attributes) {
+            var dm = 0;
+            if (attributes.intelligence >= 9) { dm += 2; }
+            if ((roll(2) + dm) >= 5) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        ranks: {
+            1: '',
+            2: '',
+            3: '',
+            4: '',
+            5: '',
+            6: ''
+        }
+    },
 };
 
 var traveller = {
-    name: 'Alexander Jamison',
+    name: generateName(),
     service: 'Merchant',
     rank: 'Captain',
     age: 18,
@@ -147,87 +265,36 @@ var traveller = {
             + decToHex(this.attributes.education)
             + decToHex(this.attributes.social);
     },
-    setService: function () {
+    setService: function() {
         // In which service should we try to enlist?
-        var serviceScores = {
-            navy: 0,
-            marines: 0,
-            arm: 0,
-            scouts: 0,
-            merchants: 0,
-            other: 2
-        };
-        if (this.attributes.strength > 6) {
-            serviceScores.marines += 2;
-            serviceScores.scouts += 2;
-            serviceScores.merchants += 1;
-        }
-        if (this.attributes.dexterity > 5) {
-            serviceScores.army += 1;
-        }
-        if (this.attributes.endurance > 4) {
-            serviceScores.army += 2;
-        }
-        if (this.attributes.intelligence > 5) {
-            serviceScores.navy += 1;
-            serviceScores.marines += 1;
-            serviceScores.scouts += 1;
-            serviceScores.merchants += 2;
-        }
-        if (this.attributes.education > 8) {
-            serviceScores.navy += 2;
-        }
-        var highestScore = 0;
         var preferredService = 'other';
-        for (var s in serviceScores) {
-            if (serviceScores[s] > highestScore) {
-                preferredService = s;
-                highestScore = serviceScores[s];
-            }
-            if ((serviceScores[s] == highestScore) && (roll(1) > 4)) {
-                preferredService = s;
+        var preferredServiceDM = 1;
+        var thisService;
+        var thisServiceDM;
+        for (var i = 0, limit = service.services.length; i < limit; i++) {
+            thisService = service.services[i];
+            thisServiceDM = service[thisService].enlistmentDM(this.attributes);
+            if (thisServiceDM > preferredServiceDM) {
+                preferredService = thisService;
+                preferredServiceDM = thisServiceDM;
             }
         }
-        // Attempt to enlist.
-        this.service = preferredService;
-        var enlistmentThrows = {
-            navy: 8,
-            marines: 9,
-            army: 5,
-            scouts: 7,
-            merchants: 7,
-            other: 3
-        };
+        // Attempt to enlist
         this.history.push('Attempted to enlist in the '
-            + preferredService.capitalize() + '.');
-        if ((roll(2) + serviceScores[preferredService]) >= enlistmentThrows[preferredService]) {
+            + service[preferredService].serviceName + '.');
+        if ((roll(2) + preferredServiceDM) >= service[preferredService].enlistmentThrow) {
             this.history.push('Enlisted accepted.');
+            this.service = preferredService;
         } else {
             this.history.push('Enlistment denied.');
-            this.service = function () {
-                switch(roll(1)) {
-                    case(1):
-                        return 'navy';
-                    case(2):
-                        return 'marines';
-                    case(3):
-                        return 'army';
-                    case(4):
-                        return 'scouts';
-                    case(5):
-                        return 'merchants';
-                    case(6):
-                        return 'other';
-                }
-            }();
-            this.history.push('Drafted into the ' + this.service.capitalize() + '.')
+            this.service = service.draft();
+            this.history.push('Drafted into the ' + service[this.service].serviceName + '.')
         }
     },
     deceased: false,
     doServiceTerm: function() {
         function checkSurvival() {
             var survivalRoll = roll(2);
-            console.log(this.service);
             switch(this.service) {
                 case('navy'):
                     if (survivalRoll > 4) {
@@ -291,7 +358,6 @@ var traveller = {
                     }
             }
         }
-        console.log(this.deceased);
         checkSurvival();
     },
     toString: function () {
@@ -308,7 +374,7 @@ function test() {
     t.setAttributes();
     t.setService();
     t.doServiceTerm();
-    console.log(t.deceased);
+    console.log('Deceased: ' + t.deceased);
     console.log(t.toString());
     for (var i = 0; i < t.history.length; i++) {
         console.log(t.history[i]);
