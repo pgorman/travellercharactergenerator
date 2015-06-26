@@ -77,7 +77,7 @@ var service = {
         },
         checkCommission: function(attributes) {
             var dm = 0;
-            if (attributes.social >= 9) { dm += 2; }
+            if (attributes.social >= 9) { dm += 1; }
             if ((roll(2) + dm) >= 10) {
                 return true;
             } else {
@@ -112,6 +112,15 @@ var service = {
             4: 'Lt Colonel',
             5: 'Colonel',
             6: 'Brigadier'
+        },
+        checkCommission: function(attributes) {
+            var dm = 0;
+            if (attributes.education >= 7) { dm += 1; }
+            if ((roll(2) + dm) >= 9) {
+                return true;
+            } else {
+                return false;
+            }
         }
     },
     army: {
@@ -141,6 +150,15 @@ var service = {
             4: 'Lt Colonel',
             5: 'Colonel',
             6: 'General'
+        },
+        checkCommission: function(attributes) {
+            var dm = 0;
+            if (attributes.endurance >= 7) { dm += 1; }
+            if ((roll(2) + dm) >= 5) {
+                return true;
+            } else {
+                return false;
+            }
         }
     },
     scouts: {
@@ -170,6 +188,9 @@ var service = {
             4: '',
             5: '',
             6: ''
+        },
+        checkCommission: function(attributes) {
+            return false;
         }
     },
     merchants: {
@@ -199,6 +220,15 @@ var service = {
             4: '1st Officer',
             5: 'Captain',
             6: ''
+        },
+        checkCommission: function(attributes) {
+            var dm = 0;
+            if (attributes.intelligence >= 6) { dm += 1; }
+            if ((roll(2) + dm) >= 4) {
+                return true;
+            } else {
+                return false;
+            }
         }
     },
     other: {
@@ -226,6 +256,9 @@ var service = {
             4: '',
             5: '',
             6: ''
+        },
+        checkCommission: function(attributes) {
+            return false;
         }
     },
 };
@@ -288,12 +321,23 @@ var traveller = {
             this.history.push('Drafted into the ' + service[this.service].serviceName + '.')
         }
     },
+    serviceTermCount: 0,
     deceased: false,
+    commissioned: false,
     doServiceTerm: function() {
+        this.serviceTermCount += 1;
         // Check survival:
         if (service[this.service].checkSurvival(this.attributes) !== true) {
             this.history.push('Died during service.');
             this.deceased = true;
+        }
+        // Check commission:
+        if (this.commissioned !== true) {
+            if (service[this.service].checkCommission(this.attributes) == true) {
+                this.commissioned = true;
+                this.history.push('Commissioned during service term '
+                    + this.serviceTermCount + '.');
+            }
         }
     },
     toString: function () {
