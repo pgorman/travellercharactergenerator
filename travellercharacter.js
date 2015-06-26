@@ -43,10 +43,7 @@ function generateName() {
 }
 
 var service = {
-//
-//    services: ['navy', 'marines', 'army', 'scouts', 'merchants', 'other'],
-//
-    services: ['navy', 'marines'],
+    services: ['navy', 'marines', 'army', 'scouts', 'merchants', 'other'],
     draft: function () {
         return arnd(this.services);
     },
@@ -293,72 +290,11 @@ var traveller = {
     },
     deceased: false,
     doServiceTerm: function() {
-        function checkSurvival() {
-            var survivalRoll = roll(2);
-            switch(this.service) {
-                case('navy'):
-                    if (survivalRoll > 4) {
-                        return true;
-                    } else if ((survivalRoll > 2) && (this.intelligence > 6)) {
-                        return true;
-                    } else {
-                        this.history.push('Killed in the line of duty.');
-                        this.deceased = true;
-                        return false;
-                    }
-                case('marines'):
-                    if (survivalRoll > 5) {
-                        return true;
-                    } else if ((survivalRoll > 4) && (this.endurance > 7)) {
-                        return true;
-                    } else {
-                        this.history.push('Killed in the line of duty.');
-                        this.deceased = true;
-                        return false;
-                    }
-                case('army'):
-                    if (survivalRoll > 4) {
-                        return true;
-                    } else if ((survivalRoll > 2) && (this.education > 5)) {
-                        return true;
-                    } else {
-                        this.history.push('Killed in the line of duty.');
-                        this.deceased = true;
-                        return false;
-                    }
-                case('scouts'):
-                    if (survivalRoll > 6) {
-                        return true;
-                    } else if ((survivalRoll > 4) && (this.endurance > 8)) {
-                        return true;
-                    } else {
-                        this.history.push('Killed in the line of duty.');
-                        this.deceased = true;
-                        return false;
-                    }
-                case('merchants'):
-                    if (survivalRoll > 4) {
-                        return true;
-                    } else if ((survivalRoll > 2) && (this.intelligence > 6)) {
-                        return true;
-                    } else {
-                        this.history.push('Killed in the line of duty.');
-                        this.deceased = true;
-                        return false;
-                    }
-                case('other'):
-                    if (survivalRoll > 4) {
-                        return true;
-                    } else if ((survivalRoll > 2) && (this.intelligence > 8)) {
-                        return true;
-                    } else {
-                        this.history.push('Killed in the line of duty.');
-                        this.deceased = true;
-                        return false;
-                    }
-            }
+        // Check survival:
+        if (service[this.service].checkSurvival(this.attributes) !== true) {
+            this.history.push('Died during service.');
+            this.deceased = true;
         }
-        checkSurvival();
     },
     toString: function () {
         return this.service.capitalize() + ' ' + this.rank + ' ' + this.name 
