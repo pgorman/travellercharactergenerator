@@ -1,4 +1,6 @@
-function travellerCharacterGenerator(output, count, testmode) {
+function travellerCharacterGenerator(output, testmode) {
+// output is 'text', 'html', or 'JSON'.
+// testmode is true or false.
 
 String.prototype.capitalize = function() {
     // Accept "word" and return "Word".
@@ -39,7 +41,25 @@ function numCommaSep(n) {
 }
 
 function generateName() {
-    return 'Alexander Jamison';
+    var given = ['Adam', 'Ahmed', 'Ali', 'An', 'Ananya', 'Andrew', 'Antonio', 'Aarav', 'Bartholomew', 'Ben', 'Bo', 'Brom', 'Charles', 'Cheng', 'Daniel', 'David', 'Diego', 'Emily', 'Emma', 'Esperanza', 'Fang', 'Fatima', 'Feng', 'Finn', 'Gabriel', 'George', 'Hamza', 'Haruto', 'Hiroto', 'Isidora', 'Jack', 'Jacob', 'James', 'John', 'Juan', 'Judas', 'Lena', 'Leo', 'Logan', 'Luis', 'Luke', 'Malika', 'Mark', 'Mariam', 'Mary', 'Martha', 'Mehmet', 'Mohamed', 'Nadia', 'Nicolas', 'Noam', 'Oliver', 'Olivia', 'Omar', 'Paul', 'Philip', 'Rachid', 'Ren', 'Rin', 'Said', 'Santino', 'Sara', 'Shu', 'Simon', 'Sophia', 'Stefan', 'Thaddaeus', 'Thomas', 'Victor', 'Victoria', 'William', 'Wei', 'Wen', 'Yan', 'Yi', 'Youssef', 'Zoe'];
+    var family = ['Abe', 'Anderson', 'Becker', 'Bauer', 'Brown', 'Chang', 'Chen', 'Chu', 'Cohen', 'Colombo', 'Cruz', 'Das', 'Davies', 'Díaz', 'Dubois', 'Esposito', 'Evans', 'Fernandes', 'Fontana', 'Fujii', 'García', 'Green', 'Gruber', 'Hall', 'Hernández', 'Hoffmann', 'Hon', 'Itō', 'Ivanov', 'Jensen', 'Jones', 'Kask', 'Katz', 'Kelly', 'Khan', 'Kim', 'Klein', 'Kowalski', 'Larsen', 'Lee', 'Li', 'Lin', 'Ma', 'Martin', 'Mirza', 'Moreau', 'Murphy', 'Novák', 'Ota', 'Papadopoulos', 'Pérez', 'Petrov', 'Pavlov', 'Popov', 'Quinn', 'Reyes', 'Rizzo', 'Robinson', 'Rodríguez', 'Rossi', 'Saar', 'Santos', 'Satō', 'Schmidt', 'Silva', 'Sokolov', 'Sullivan', 'Sun', 'Suzuki', 'Singh', 'Smith', 'Tamm', 'Tanaka', 'Taylor', 'Varga', 'Wagner', 'Wang', 'Watanabe', 'Weber', 'Wen', 'White', 'Williams', 'Wilson', 'Wood', 'Wu', 'Yang', 'Zhang'];
+    return arnd(given) + ' ' + arnd(family);
+}
+
+function intToOrdinal(i) {
+    switch (i) {
+        case 1: return 'first';
+        case 2: return 'second';
+        case 3: return 'third';
+        case 4: return 'fourth';
+        case 5: return 'fifth';
+        case 6: return 'sixth';
+        case 7: return 'seventh';
+        case 8: return 'eighth';
+        case 9: return 'ninth';
+        case 10: return 'tenth';
+        default: return i + 'th';
+    }
 }
 
 var service = {
@@ -67,13 +87,24 @@ var service = {
                 return false;
             }
         },
+        reenlistThrow: 6,
         ranks: {
+            0: 'Starman',
             1: 'Ensign',
             2: 'Lieutenant',
             3: 'Lt Cmdr',
             4: 'Commander',
             5: 'Captain',
             6: 'Admiral'
+        },
+        checkPromotion: function (attributes) {
+            var dm = 0;
+            if (attributes.education >= 8) { dm += 1; }
+            if ((roll(2) + dm) >= 8) {
+                return true;
+            } else {
+                return false;
+            }
         },
         checkCommission: function(attributes) {
             var dm = 0;
@@ -105,13 +136,24 @@ var service = {
                 return false;
             }
         },
+        reenlistThrow: 6,
         ranks: {
+            0: '',
             1: 'Lieutenant',
             2: 'Captain',
             3: 'Force Comdr',
             4: 'Lt Colonel',
             5: 'Colonel',
             6: 'Brigadier'
+        },
+        checkPromotion: function (attributes) {
+            var dm = 0;
+            if (attributes.social >= 8) { dm += 1; }
+            if ((roll(2) + dm) >= 9) {
+                return true;
+            } else {
+                return false;
+            }
         },
         checkCommission: function(attributes) {
             var dm = 0;
@@ -143,13 +185,24 @@ var service = {
                 return false;
             }
         },
+        reenlistThrow: 7,
         ranks: {
+            0: 'Trooper',
             1: 'Lieutenant',
             2: 'Captain',
             3: 'Major',
             4: 'Lt Colonel',
             5: 'Colonel',
             6: 'General'
+        },
+        checkPromotion: function (attributes) {
+            var dm = 0;
+            if (attributes.education >= 7) { dm += 1; }
+            if ((roll(2) + dm) >= 6) {
+                return true;
+            } else {
+                return false;
+            }
         },
         checkCommission: function(attributes) {
             var dm = 0;
@@ -181,13 +234,18 @@ var service = {
                 return false;
             }
         },
+        reenlistThrow: 3,
         ranks: {
+            0: '',
             1: '',
             2: '',
             3: '',
             4: '',
             5: '',
             6: ''
+        },
+        checkPromotion: function (attributes) {
+            return false;
         },
         checkCommission: function(attributes) {
             return false;
@@ -213,15 +271,25 @@ var service = {
                 return false;
             }
         },
+        reenlistThrow: 4,
         ranks: {
             1: '4th Officer',
             2: '3rd Officer',
             3: '2nd Officer',
             4: '1st Officer',
             5: 'Captain',
-            6: ''
+            6: 'Captain'
         },
-        checkCommission: function(attributes) {
+        checkPromotion: function (attributes) {
+            var dm = 0;
+            if (attributes.intelligence >= 9) { dm += 1; }
+            if ((roll(2) + dm) >= 10) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        checkCommission: function (attributes) {
             var dm = 0;
             if (attributes.intelligence >= 6) { dm += 1; }
             if ((roll(2) + dm) >= 4) {
@@ -232,9 +300,9 @@ var service = {
         }
     },
     other: {
-        serviceName: 'Other', // like "in the Navy"
-        memberName: 'Other', // like "Navy Admiral Nelson"
-        adjName: 'Other', // like "the Naval service"
+        serviceName: 'other service', // like "in the Navy"
+        memberName: '', // like "Navy Admiral Nelson"
+        adjName: 'other', // like "the Naval service"
         enlistmentThrow: 3,
         enlistmentDM: function (attributes) {
             var dm = 0;
@@ -249,7 +317,9 @@ var service = {
                 return false;
             }
         },
+        reenlistThrow: 5,
         ranks: {
+            0: '',
             1: '',
             2: '',
             3: '',
@@ -257,7 +327,10 @@ var service = {
             5: '',
             6: ''
         },
-        checkCommission: function(attributes) {
+        checkPromotion: function (attributes) {
+            return false;
+        },
+        checkCommission: function (attributes) {
             return false;
         }
     },
@@ -265,10 +338,9 @@ var service = {
 
 var traveller = {
     name: generateName(),
-    service: 'Merchant',
-    rank: 'Captain',
+    service: 'Other',
     age: 18,
-    terms: 5,
+    terms: 0,
     credits: 31200,
     history: [],
     attributes: {
@@ -310,10 +382,10 @@ var traveller = {
             }
         }
         // Attempt to enlist
-        this.history.push('Attempted to enlist in the '
+        this.history.push('Attempted to enlist in '
             + service[preferredService].serviceName + '.');
         if ((roll(2) + preferredServiceDM) >= service[preferredService].enlistmentThrow) {
-            this.history.push('Enlisted accepted.');
+            this.history.push('Enlistment accepted.');
             this.service = preferredService;
         } else {
             this.history.push('Enlistment denied.');
@@ -321,47 +393,139 @@ var traveller = {
             this.history.push('Drafted into the ' + service[this.service].serviceName + '.')
         }
     },
-    serviceTermCount: 0,
     deceased: false,
     commissioned: false,
-    doServiceTerm: function() {
-        this.serviceTermCount += 1;
+    rank: 0,
+    activeDuty: true,
+    retired: false,
+    doServiceTerm: function () {
+        this.terms += 1;
+        this.age += 4;
+        // Check commission:
+        if (! this.commissioned) {
+            if (service[this.service].checkCommission(this.attributes)) {
+                this.commissioned = true;
+                this.rank += 1;
+                this.history.push('Commissioned during '
+                    + intToOrdinal(this.terms) + ' term of service.');
+            }
+        }
+        // Try for promotion:
+        if (this.commissioned && (this.rank < 6)) {
+            if (service[this.service].checkPromotion(this.attributes)) {
+                this.rank += 1;
+                this.history.push('Promoted to '
+                    + service[this.service].ranks[this.rank] + '.');
+            }
+        }
         // Check survival:
-        if (service[this.service].checkSurvival(this.attributes) !== true) {
-            this.history.push('Died during service.');
+        if (! service[this.service].checkSurvival(this.attributes)) {
+            this.history.push('Death in service.');
             this.deceased = true;
         }
-        // Check commission:
-        if (this.commissioned !== true) {
-            if (service[this.service].checkCommission(this.attributes) == true) {
-                this.commissioned = true;
-                this.history.push('Commissioned during service term '
-                    + this.serviceTermCount + '.');
+    },
+    doReenlistment: function () {
+        if (this.terms == 11) {
+            this.retired = true;
+            this.activeDuty = false;
+            this.history.push('Retired after '
+                + intToOrdinal(this.terms) + ' term.');
+            return;
+        }
+        var reenlistRoll = roll(2);
+        if (reenlistRoll == 12) {
+            this.history.push('Manditory reenlistment for '
+                + intToOrdinal(this.terms + 1) + ' term.');
+        } else if (this.terms >= 7) {
+            this.activeDuty = false;
+            this.history.push('Mandatory retirement after '
+                + intToOrdinal(this.terms) + ' term.');
+        } else if (reenlistRoll < service[this.service].reenlistThrow) {
+            this.activeDuty = false;
+            this.history.push('Denied reenlistment after '
+                + intToOrdinal(this.terms) + ' term.');
+        } else if (reenlistRoll >= service[this.service].reenlistThrow) {
+            if (roll(1) == 6) {
+                if (this.terms < 5) {
+                    this.activeDuty = false;
+                    this.history.push('Chose not to reenlist after ' 
+                        + intToOrdinal(this.terms) + ' term.');
+                } else {
+                    this.activeDuty = false;
+                    this.retired = true;
+                    this.history.push('Retired after ' 
+                        + intToOrdinal(this.terms) + ' term.');
+                }
+            } else {
+                this.history.push('Voluntarily reenlisted for '
+                    + intToOrdinal(this.terms + 1) + ' term.');
             }
         }
     },
+    doAging: function () {
+        if (this.age < 34) { return; }
+
+        // Aging crisis?
+    },
     toString: function () {
-        return this.service.capitalize() + ' ' + this.rank + ' ' + this.name 
+        return (function() {
+                if (this.deceased) {
+                    return '† ';
+                } else {
+                    return '';
+                }
+            }).call(this)
+            + service[this.service].memberName + ' '
+            + (function () {
+                if (service[this.service].ranks[this.rank] != '') {
+                    return service[this.service].ranks[this.rank] + ' ';
+                } else {
+                    return '';
+                }
+            }).call(this)
+            + this.name
             + '    ' + this.getAttrString() + '    Age '
-            + this.age + "\n" + this.terms + ' terms                Cr'
-            + numCommaSep(this.credits);
+            + this.age + "\n" 
+            + (function () {
+                if (this.terms == 1) {
+                    return this.terms + ' term';
+                } else {
+                    return this.terms + ' terms';
+                }
+            }).call(this)
+            + '                            Cr' + numCommaSep(this.credits)
+            + "\n\n"
+            + (function () {
+                var history = "Service History:\n";
+                for (var i = 0, limit = this.history.length; i < limit; i++) {
+                    history = history + this.history[i] + "\n";
+                }
+                return history;
+            }).call(this);
     }
 };
 
-var t = Object.create(traveller);
-
-function test() {
+function newTraveller() {
+    var t = Object.create(traveller);
     t.setAttributes();
     t.setService();
     t.doServiceTerm();
-    console.log('Deceased: ' + t.deceased);
-    console.log(t.toString());
-    for (var i = 0; i < t.history.length; i++) {
-        console.log(t.history[i]);
+    if (! t.deceased) { t.doReenlistment(); }
+    while (t.activeDuty && (! t.deceased)) {
+        t.doServiceTerm();
+        t.doReenlistment();
+        t.doAging;
     }
+    return t;
 }
 
-if ((testmode == 'test') || (testmode == true)) {
+
+function test() {
+    var t = newTraveller();
+    console.log(t.toString());
+}
+
+if ((testmode == 'test') || (testmode)) {
     var TEST = true;
     test();
 } else {
@@ -370,4 +534,4 @@ if ((testmode == 'test') || (testmode == true)) {
 
 } // End wrapper function travellerCharacterGenerator()
 
-travellerCharacterGenerator('text', '1', 'test');
+travellerCharacterGenerator('text', 'test');
