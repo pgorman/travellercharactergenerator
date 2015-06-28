@@ -1,4 +1,4 @@
-function travellerCharacterGenerator(output, testmode) {
+function travellerCharacterGenerator(output) {
 // output is 'text', 'html', or 'JSON'.
 // testmode is true or false.
 
@@ -369,7 +369,7 @@ var traveller = {
     },
     setService: function() {
         // In which service should we try to enlist?
-        var preferredService = 'other';
+        var preferredService = arnd(service.services);
         var preferredServiceDM = 1;
         var thisService;
         var thisServiceDM;
@@ -379,6 +379,11 @@ var traveller = {
             if (thisServiceDM > preferredServiceDM) {
                 preferredService = thisService;
                 preferredServiceDM = thisServiceDM;
+            } else if (thisServiceDM == preferredServiceDM) {
+                if (roll(2) > 7) {
+                    preferredService = thisService;
+                    preferredServiceDM = thisServiceDM;
+                }
             }
         }
         // Attempt to enlist
@@ -390,7 +395,7 @@ var traveller = {
         } else {
             this.history.push('Enlistment denied.');
             this.service = service.draft();
-            this.history.push('Drafted into the ' + service[this.service].serviceName + '.')
+            this.history.push('Drafted into ' + service[this.service].serviceName + '.')
         }
     },
     deceased: false,
@@ -425,13 +430,6 @@ var traveller = {
         }
     },
     doReenlistment: function () {
-        if (this.terms == 11) {
-            this.retired = true;
-            this.activeDuty = false;
-            this.history.push('Retired after '
-                + intToOrdinal(this.terms) + ' term.');
-            return;
-        }
         var reenlistRoll = roll(2);
         if (reenlistRoll == 12) {
             this.history.push('Manditory reenlistment for '
@@ -445,7 +443,7 @@ var traveller = {
             this.history.push('Denied reenlistment after '
                 + intToOrdinal(this.terms) + ' term.');
         } else if (reenlistRoll >= service[this.service].reenlistThrow) {
-            if (roll(1) == 6) {
+            if (roll(2) >= 10) {
                 if (this.terms < 5) {
                     this.activeDuty = false;
                     this.history.push('Chose not to reenlist after ' 
@@ -463,9 +461,34 @@ var traveller = {
         }
     },
     doAging: function () {
-        if (this.age < 34) { return; }
-
+        // Age-related attribute loss?
+        if (this.age < 34) {
+            return;
+        } else if (this.age <= 46) {
+            if (roll(2) <= 8) { this.attributes['strength'] -= 1; }
+            if (roll(2) <= 7) { this.attributes['dexterity'] -= 1; }
+            if (roll(2) <= 8) { this.attributes['endurance'] -= 1; }
+        } else if (this.age <= 62) {
+            if (roll(2) <= 9) { this.attributes['strength'] -= 1; }
+            if (roll(2) <= 8) { this.attributes['dexterity'] -= 1; }
+            if (roll(2) <= 9) { this.attributes['endurance'] -= 1; }
+        } else {
+            if (roll(2) <= 9) { this.attributes['strength'] -= 1; }
+            if (roll(2) <= 9) { this.attributes['dexterity'] -= 1; }
+            if (roll(2) <= 9) { this.attributes['endurance'] -= 1; }
+            if (roll(2) <= 9) { this.attributes['intelligence'] -= 1; }
+        }
         // Aging crisis?
+        for (var a in this.attributes) {
+            if (this.attributes[a] < 1) {
+                if (roll(2) <= 8) {
+                    this.history.push("Died of illness.");
+                    this.deceased = true;
+                } else {
+                    this.attributes[a] = 1;
+                }
+            }
+        }
     },
     toString: function () {
         return (function() {
@@ -475,7 +498,10 @@ var traveller = {
                     return '';
                 }
             }).call(this)
-            + service[this.service].memberName + ' '
+            + (function () {
+                if (this.service == 'other') { return ''; }
+                return service[this.service].memberName + ' ';
+            }).call(this)
             + (function () {
                 if (service[this.service].ranks[this.rank] != '') {
                     return service[this.service].ranks[this.rank] + ' ';
@@ -509,29 +535,20 @@ function newTraveller() {
     var t = Object.create(traveller);
     t.setAttributes();
     t.setService();
-    t.doServiceTerm();
-    if (! t.deceased) { t.doReenlistment(); }
     while (t.activeDuty && (! t.deceased)) {
         t.doServiceTerm();
-        t.doReenlistment();
-        t.doAging;
+        t.doAging();
+        if (! t.deceased) {
+            t.doReenlistment();
+        }
     }
     return t;
 }
 
-
-function test() {
-    var t = newTraveller();
-    console.log(t.toString());
-}
-
-if ((testmode == 'test') || (testmode)) {
-    var TEST = true;
-    test();
-} else {
-    var TEST = false;
-}
+var TEST = true;
+var t = newTraveller();
+console.log(t.toString());
 
 } // End wrapper function travellerCharacterGenerator()
 
-travellerCharacterGenerator('text', 'test');
+travellerCharacterGenerator('text');
