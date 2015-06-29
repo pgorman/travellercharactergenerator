@@ -470,14 +470,17 @@ var traveller = {
     musterOut: function () {
         var musterDM = 0;
         var musterRolls = this.terms + (function () {
-            if ((this.rank == 1) || (this.rank == 2)) { return 1; }
-            if ((this.rank == 3) || (this.rank == 4)) { return 2; }
-            if (this.rank >= 5) {
+            if ( this.ranks < 1) { return 0;
+            } else if ((this.rank == 1) || (this.rank == 2)) { return 1;
+            } else if ((this.rank == 3) || (this.rank == 4)) { return 2;
+            } else if (this.rank >= 5) {
                 musterDM += 1;
                 return 3;
+            } else {
+                return 0;
             }
         }).call(this);
-        debug += 'Muster rolls: ' + musterRolls + "\n";
+        debug += 'Muster rolls: ' + musterRolls + ' ' + this.terms + "\n";
         for (var i = 0, limit = musterRolls; i <= limit; i++) {
             this.credits += service[this.service].musterCash[roll(1) + musterDM];
         }
