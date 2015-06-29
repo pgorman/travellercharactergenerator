@@ -123,6 +123,34 @@ var service = {
             5: 20000,
             6: 50000,
             7: 50000
+        },
+        musterBenefits: function (dm) {
+            // Expects to be invoked from traveller with call(this).
+            switch(roll(1) + dm) {
+                case 1:
+                    this.benefits.push('Low Passage');
+                    break;
+                case 2:
+                    this.attributes.intelligence += 1;
+                    break;
+                case 3:
+                    this.attributes.education += 1;
+                    break;
+                case 4:
+                    this.skills['blade'] += 1;
+                    break;
+                case 5:
+                    if (this.benefits.indexOf("Travellers' Aide Society") > -1) {
+                        break;
+                    }
+                    this.benefits.push("Travellers' Aid Society");
+                    break
+                case 6:
+                    this.benefits.push('High Passage');
+                    break;
+                default:
+                    this.attributes.social += 2;
+            }
         }
     },
     marines: {
@@ -181,6 +209,34 @@ var service = {
             5: 20000,
             6: 30000,
             7: 40000
+        },
+        musterBenefits: function (dm) {
+            // Expects to be invoked from traveller with call(this).
+            switch(roll(1) + dm) {
+                case 1:
+                    this.benefits.push('Low Passage');
+                    break;
+                case 2:
+                    this.attributes.intelligence += 1;
+                    break;
+                case 3:
+                    this.attributes.education += 1;
+                    break;
+                case 4:
+                    this.skills['blade'] += 1;
+                    break;
+                case 5:
+                    if (this.benefits.indexOf("Travellers' Aide Society") > -1) {
+                        break;
+                    }
+                    this.benefits.push("Travellers' Aid Society");
+                    break
+                case 6:
+                    this.benefits.push('High Passage');
+                    break;
+                default:
+                    this.attributes.social += 2;
+            }
         }
     },
     army: {
@@ -239,6 +295,31 @@ var service = {
             5: 10000,
             6: 20000,
             7: 30000
+        },
+        musterBenefits: function (dm) {
+            // Expects to be invoked from traveller with call(this).
+            switch(roll(1) + dm) {
+                case 1:
+                    this.benefits.push('Low Passage');
+                    break;
+                case 2:
+                    this.attributes.intelligence += 1;
+                    break;
+                case 3:
+                    this.attributes.education += 1;
+                    break;
+                case 4:
+                    this.skills['gun'] += 1;
+                    break;
+                case 5:
+                    this.benefits.push('High Passage');
+                    break
+                case 6:
+                    this.benefits.push('Middle Passage');
+                    break;
+                default:
+                    this.attributes.social += 1;
+            }
         }
     },
     scouts: {
@@ -277,6 +358,34 @@ var service = {
             5: 50000,
             6: 50000,
             7: 50000
+        },
+        musterBenefits: function (dm) {
+            // Expects to be invoked from traveller with call(this).
+            switch(roll(1) + dm) {
+                case 1:
+                    this.benefits.push('Low Passage');
+                    break;
+                case 2:
+                    this.attributes.intelligence += 2;
+                    break;
+                case 3:
+                    this.attributes.education += 2;
+                    break;
+                case 4:
+                    this.skills['blade'] += 1;
+                    break;
+                case 5:
+                    this.skills['gun'] += 1;
+                    break
+                case 6:
+                    if (this.benefits.indexOf('Scout Ship') > -1) {
+                        break;
+                    }
+                    this.benefits.push('Scout Ship');
+                    break;
+                default:
+                    this.attributes.social += 1;
+            }
         }
     },
     merchants: {
@@ -334,6 +443,31 @@ var service = {
             5: 20000,
             6: 40000,
             7: 40000
+        },
+        musterBenefits: function (dm) {
+            // Expects to be invoked from traveller with call(this).
+            switch(roll(1) + dm) {
+                case 1:
+                    this.benefits.push('Low Passage');
+                    break;
+                case 2:
+                    this.attributes.intelligence += 1;
+                    break;
+                case 3:
+                    this.attributes.education += 1;
+                    break;
+                case 4:
+                    this.skills['gun'] += 1;
+                    break;
+                case 5:
+                    this.skills['blade'] += 1;
+                    break
+                case 6:
+                    this.benefits.push('Low Passage');
+                    break;
+                default:
+                    this.benefits.push('Free Trader');
+            }
         }
     },
     other: {
@@ -370,6 +504,27 @@ var service = {
             5: 10000,
             6: 50000,
             7: 100000
+        },
+        musterBenefits: function (dm) {
+            // Expects to be invoked from traveller with call(this).
+            switch(roll(1) + dm) {
+                case 1:
+                    this.benefits.push('Low Passage');
+                    break;
+                case 2:
+                    this.attributes.intelligence += 1;
+                    break;
+                case 3:
+                    this.attributes.education += 1;
+                    break;
+                case 4:
+                    this.skills['gun'] += 1;
+                case 5:
+                    this.benefits.push('High Passage');
+                    break;
+                default:
+                    break;
+            }
         }
     },
 };
@@ -381,6 +536,7 @@ var traveller = {
     terms: 0,
     credits: 0,
     history: [],
+    benefits: [],
     attributes: {
         strength: roll(2),
         dexterity: roll(2),
@@ -441,6 +597,7 @@ var traveller = {
     rank: 0,
     activeDuty: true,
     retired: false,
+    retirementPay: 0,
     doServiceTerm: function () {
         this.terms += 1;
         this.age += 4;
@@ -468,21 +625,57 @@ var traveller = {
         }
     },
     musterOut: function () {
-        var musterDM = 0;
-        var musterRolls = this.terms + (function () {
+        var cashDM = 0;
+        var musterRolls = 0;
+        if (this.service == 'scouts') {
+            musterRolls += (this.terms * 2);
+        } else {
+            musterRolls += this.terms;
+        }
+        musterRolls += (function () {
             if ( this.ranks < 1) { return 0;
             } else if ((this.rank == 1) || (this.rank == 2)) { return 1;
             } else if ((this.rank == 3) || (this.rank == 4)) { return 2;
             } else if (this.rank >= 5) {
-                musterDM += 1;
+                cashDM += 1;
                 return 3;
             } else {
                 return 0;
             }
         }).call(this);
-        debug += 'Muster rolls: ' + musterRolls + ' ' + this.terms + "\n";
+        var benefitsDM = 0;
+        if ('gambling' in this.skills) {
+            benefitsDM += 1;
+        }
         for (var i = 0, limit = musterRolls; i <= limit; i++) {
-            this.credits += service[this.service].musterCash[roll(1) + musterDM];
+            if (i <= 3) {
+                this.credits += service[this.service].musterCash[roll(1) + benefitsDM];
+            } else {
+                service[this.service].musterBenefits.call(this, benefitsDM)
+            }
+        }
+        if (this.terms >= 5) {
+            switch(this.terms) {
+                case 5:
+                    this.retirementPay = 4000;
+                    break;
+                case 6:
+                    this.retirementPay = 6000;
+                    break;
+                case 7:
+                    this.retirementPay = 8000;
+                    break;
+                case 8:
+                    this.retirementPay = 10000;
+                    break;
+                case 9:
+                    this.retirementPay = 12000;
+                    break;
+                default:
+                    this.retirementPay = ((this.terms - 9) * 2000) + 12000;
+            }
+            this.benefits.push(numCommaSep(this.retirementPay)
+                + '/year Retirement Pay');
         }
     },
     doReenlistment: function () {
@@ -546,6 +739,7 @@ var traveller = {
             }
         }
     },
+    skills: {},
     toString: function () {
         return (function() {
                 if (this.deceased) {
@@ -575,7 +769,13 @@ var traveller = {
                     return this.terms + ' terms';
                 }
             }).call(this)
-            + '                            Cr' + numCommaSep(this.credits)
+            + (function () {
+                if (! this.deceased) {
+                    return "\t\t\t\tCr" + numCommaSep(this.credits);
+                } else {
+                    return '';
+                }
+            }).call(this)
             + "\n\n"
             + (function () {
                 var history = "Service History:\n";
@@ -583,7 +783,21 @@ var traveller = {
                     history = history + this.history[i] + "\n";
                 }
                 return history;
-            }).call(this) + debug;
+            }).call(this)
+            + (function () {
+                if (this.benefits.length > 0) {
+                    this.benefits.sort();
+                    var benefits = '\nBenefits: ';
+                    for (var i = 0, limit = this.benefits.length; i < limit; i++) {
+                        if (i < limit - 1) {
+                            benefits += this.benefits[i] + ', ';
+                        } else {
+                            benefits += this.benefits[i] + "\n";
+                        }
+                    }
+                    return benefits;
+                } else { return '' }
+            }).call(this) ;
     }
 };
 
@@ -598,11 +812,12 @@ function newTraveller() {
             t.doReenlistment();
         }
     }
-    t.musterOut();
+    if (! t.deceased) {
+        t.musterOut();
+    }
     return t;
 }
 
-var debug = "\nDEBUG\n";
 var TEST = true;
 var t = newTraveller();
 console.log(t.toString());
