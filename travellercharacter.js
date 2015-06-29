@@ -114,6 +114,15 @@ var service = {
             } else {
                 return false;
             }
+        },
+        musterCash: {
+            1: 1000,
+            2: 5000,
+            3: 5000,
+            4: 10000,
+            5: 20000,
+            6: 50000,
+            7: 50000
         }
     },
     marines: {
@@ -163,6 +172,15 @@ var service = {
             } else {
                 return false;
             }
+        },
+        musterCash: {
+            1: 2000,
+            2: 5000,
+            3: 5000,
+            4: 10000,
+            5: 20000,
+            6: 30000,
+            7: 40000
         }
     },
     army: {
@@ -212,6 +230,15 @@ var service = {
             } else {
                 return false;
             }
+        },
+        musterCash: {
+            1: 2000,
+            2: 5000,
+            3: 10000,
+            4: 10000,
+            5: 10000,
+            6: 20000,
+            7: 30000
         }
     },
     scouts: {
@@ -235,20 +262,21 @@ var service = {
             }
         },
         reenlistThrow: 3,
-        ranks: {
-            0: '',
-            1: '',
-            2: '',
-            3: '',
-            4: '',
-            5: '',
-            6: ''
-        },
+        ranks: { 0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: '' },
         checkPromotion: function (attributes) {
             return false;
         },
         checkCommission: function(attributes) {
             return false;
+        },
+        musterCash: {
+            1: 20000,
+            2: 20000,
+            3: 30000,
+            4: 30000,
+            5: 50000,
+            6: 50000,
+            7: 50000
         }
     },
     merchants: {
@@ -297,6 +325,15 @@ var service = {
             } else {
                 return false;
             }
+        },
+        musterCash: {
+            1: 1000,
+            2: 5000,
+            3: 10000,
+            4: 20000,
+            5: 20000,
+            6: 40000,
+            7: 40000
         }
     },
     other: {
@@ -318,20 +355,21 @@ var service = {
             }
         },
         reenlistThrow: 5,
-        ranks: {
-            0: '',
-            1: '',
-            2: '',
-            3: '',
-            4: '',
-            5: '',
-            6: ''
-        },
+        ranks: { 0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: '' },
         checkPromotion: function (attributes) {
             return false;
         },
         checkCommission: function (attributes) {
             return false;
+        },
+        musterCash: {
+            1: 1000,
+            2: 5000,
+            3: 10000,
+            4: 10000,
+            5: 10000,
+            6: 50000,
+            7: 100000
         }
     },
 };
@@ -341,7 +379,7 @@ var traveller = {
     service: 'Other',
     age: 18,
     terms: 0,
-    credits: 31200,
+    credits: 0,
     history: [],
     attributes: {
         strength: roll(2),
@@ -427,6 +465,21 @@ var traveller = {
         if (! service[this.service].checkSurvival(this.attributes)) {
             this.history.push('Death in service.');
             this.deceased = true;
+        }
+    },
+    musterOut: function () {
+        var musterDM = 0;
+        var musterRolls = this.terms + (function () {
+            if ((this.rank == 1) || (this.rank == 2)) { return 1; }
+            if ((this.rank == 3) || (this.rank == 4)) { return 2; }
+            if (this.rank >= 5) {
+                musterDM += 1;
+                return 3;
+            }
+        }).call(this);
+        debug += 'Muster rolls: ' + musterRolls + "\n";
+        for (var i = 0, limit = musterRolls; i <= limit; i++) {
+            this.credits += service[this.service].musterCash[roll(1) + musterDM];
         }
     },
     doReenlistment: function () {
@@ -527,7 +580,7 @@ var traveller = {
                     history = history + this.history[i] + "\n";
                 }
                 return history;
-            }).call(this);
+            }).call(this) + debug;
     }
 };
 
@@ -542,12 +595,15 @@ function newTraveller() {
             t.doReenlistment();
         }
     }
+    t.musterOut();
     return t;
 }
 
+var debug = "\nDEBUG\n";
 var TEST = true;
 var t = newTraveller();
 console.log(t.toString());
+return t.toString();
 
 } // End wrapper function travellerCharacterGenerator()
 
