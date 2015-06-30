@@ -1,6 +1,5 @@
 function travellerCharacterGenerator(output) {
 // output is 'text', 'html', or 'JSON'.
-// testmode is true or false.
 
 String.prototype.capitalize = function() {
     // Accept "word" and return "Word".
@@ -66,467 +65,503 @@ function generateName(gender) {
     return arnd(given) + ' ' + arnd(family);
 }
 
-var service = {
-    services: ['navy', 'marines', 'army', 'scouts', 'merchants', 'other'],
-    draft: function () {
-        return arnd(this.services);
+//---------------- "s" object holds service definitions ----------------//
+var s = {};
+s.services = ['navy', 'marines', 'army', 'scouts', 'merchants', 'other'];
+s.draft = function () {
+    return arnd(this.services);
+};
+//---------------- Define "Navy" service ----------------//
+s.navy = {
+    serviceName: 'Navy', // like "in the Navy"
+    memberName: 'Navy', // like "Navy Admiral Nelson"
+    adjName: "Naval", // like "the Naval service"
+    enlistmentThrow: 8,
+    enlistmentDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 8) { dm += 1; }
+        if (attributes.education >= 9) { dm += 2; }
+        return dm;
     },
-    navy: {
-        serviceName: 'Navy', // like "in the Navy"
-        memberName: 'Navy', // like "Navy Admiral Nelson"
-        adjName: "Naval", // like "the Naval service"
-        enlistmentThrow: 8,
-        enlistmentDM: function (attributes) {
-            var dm = 0;
-            if (attributes.intelligence >= 8) { dm += 1; }
-            if (attributes.education >= 9) { dm += 2; }
-            return dm;
-        },
-        checkSurvival: function (attributes) {
-            var dm = 0;
-            if (attributes.intelligence >= 7) { dm += 2; }
-            if ((roll(2) + dm) >= 5) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        reenlistThrow: 6,
-        ranks: {
-            0: 'Starman',
-            1: 'Ensign',
-            2: 'Lieutenant',
-            3: 'Lt Cmdr',
-            4: 'Commander',
-            5: 'Captain',
-            6: 'Admiral'
-        },
-        checkPromotion: function (attributes) {
-            var dm = 0;
-            if (attributes.education >= 8) { dm += 1; }
-            if ((roll(2) + dm) >= 8) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        checkCommission: function(attributes) {
-            var dm = 0;
-            if (attributes.social >= 9) { dm += 1; }
-            if ((roll(2) + dm) >= 10) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        musterCash: {
-            1: 1000,
-            2: 5000,
-            3: 5000,
-            4: 10000,
-            5: 20000,
-            6: 50000,
-            7: 50000
-        },
-        musterBenefits: function (dm) {
-            switch(roll(1) + dm) {
-                case 1:
-                    this.benefits.push('Low Passage');
-                    break;
-                case 2:
-                    this.attributes.intelligence += 1;
-                    break;
-                case 3:
-                    this.attributes.education += 1;
-                    break;
-                case 4:
-                    this.skills['blade'] += 1;
-                    break;
-                case 5:
-                    if (this.benefits.indexOf("Travellers' Aide Society") > -1) {
-                        break;
-                    }
-                    this.benefits.push("Travellers' Aid Society");
-                    break
-                case 6:
-                    this.benefits.push('High Passage');
-                    break;
-                default:
-                    this.attributes.social += 2;
-            }
-        }
-    },
-    marines: {
-        serviceName: 'Marines', // like "in the Navy"
-        memberName: 'Marine', // like "Navy Admiral Nelson"
-        adjName: 'Marines', // like "the Naval service"
-        enlistmentThrow: 9,
-        enlistmentDM: function (attributes) {
-            var dm = 0;
-            if (attributes.intelligence >= 8) { dm += 1; }
-            if (attributes.strength >= 8) { dm += 2; }
-            return dm;
-        },
-        checkSurvival: function (attributes) {
-            var dm = 0;
-            if (attributes.endurance >= 8) { dm += 2; }
-            if ((roll(2) + dm) >= 6) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        reenlistThrow: 6,
-        ranks: {
-            0: '',
-            1: 'Lieutenant',
-            2: 'Captain',
-            3: 'Force Comdr',
-            4: 'Lt Colonel',
-            5: 'Colonel',
-            6: 'Brigadier'
-        },
-        checkPromotion: function (attributes) {
-            var dm = 0;
-            if (attributes.social >= 8) { dm += 1; }
-            if ((roll(2) + dm) >= 9) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        checkCommission: function(attributes) {
-            var dm = 0;
-            if (attributes.education >= 7) { dm += 1; }
-            if ((roll(2) + dm) >= 9) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        musterCash: {
-            1: 2000,
-            2: 5000,
-            3: 5000,
-            4: 10000,
-            5: 20000,
-            6: 30000,
-            7: 40000
-        },
-        musterBenefits: function (dm) {
-            switch(roll(1) + dm) {
-                case 1:
-                    this.benefits.push('Low Passage');
-                    break;
-                case 2:
-                    this.attributes.intelligence += 1;
-                    break;
-                case 3:
-                    this.attributes.education += 1;
-                    break;
-                case 4:
-                    this.skills['blade'] += 1;
-                    break;
-                case 5:
-                    if (this.benefits.indexOf("Travellers' Aide Society") > -1) {
-                        break;
-                    }
-                    this.benefits.push("Travellers' Aid Society");
-                    break
-                case 6:
-                    this.benefits.push('High Passage');
-                    break;
-                default:
-                    this.attributes.social += 2;
-            }
-        }
-    },
-    army: {
-        serviceName: 'Army', // like "in the Navy"
-        memberName: 'Army', // like "Navy Admiral Nelson"
-        adjName: 'Army', // like "the Naval service"
-        enlistmentThrow: 5,
-        enlistmentDM: function (attributes) {
-            var dm = 0;
-            if (attributes.dexterity >= 6) { dm += 1; }
-            if (attributes.endurance >= 5) { dm += 2; }
-            return dm;
-        },
-        checkSurvival: function (attributes) {
-            var dm = 0;
-            if (attributes.education >= 5) { dm += 2; }
-            if ((roll(2) + dm) >= 5) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        reenlistThrow: 7,
-        ranks: {
-            0: 'Trooper',
-            1: 'Lieutenant',
-            2: 'Captain',
-            3: 'Major',
-            4: 'Lt Colonel',
-            5: 'Colonel',
-            6: 'General'
-        },
-        checkPromotion: function (attributes) {
-            var dm = 0;
-            if (attributes.education >= 7) { dm += 1; }
-            if ((roll(2) + dm) >= 6) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        checkCommission: function(attributes) {
-            var dm = 0;
-            if (attributes.endurance >= 7) { dm += 1; }
-            if ((roll(2) + dm) >= 5) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        musterCash: {
-            1: 2000,
-            2: 5000,
-            3: 10000,
-            4: 10000,
-            5: 10000,
-            6: 20000,
-            7: 30000
-        },
-        musterBenefits: function (dm) {
-            switch(roll(1) + dm) {
-                case 1:
-                    this.benefits.push('Low Passage');
-                    break;
-                case 2:
-                    this.attributes.intelligence += 1;
-                    break;
-                case 3:
-                    this.attributes.education += 1;
-                    break;
-                case 4:
-                    this.skills['gun'] += 1;
-                    break;
-                case 5:
-                    this.benefits.push('High Passage');
-                    break
-                case 6:
-                    this.benefits.push('Middle Passage');
-                    break;
-                default:
-                    this.attributes.social += 1;
-            }
-        }
-    },
-    scouts: {
-        serviceName: 'Scouts', // like "in the Navy"
-        memberName: 'Scout', // like "Navy Admiral Nelson"
-        adjName: 'Scout', // like "the Naval service"
-        enlistmentThrow: 7,
-        enlistmentDM: function (attributes) {
-            var dm = 0;
-            if (attributes.intelligence >= 6) { dm += 1; }
-            if (attributes.strength >= 8) { dm += 2; }
-            return dm;
-        },
-        checkSurvival: function (attributes) {
-            var dm = 0;
-            if (attributes.endurance >= 9) { dm += 2; }
-            if ((roll(2) + dm) >= 7) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        reenlistThrow: 3,
-        ranks: { 0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: '' },
-        checkPromotion: function (attributes) {
+    getServiceSkills: function () { return []; },
+    checkSurvival: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 7) { dm += 2; }
+        if ((roll(2) + dm) >= 5) {
+            return true;
+        } else {
             return false;
-        },
-        checkCommission: function(attributes) {
-            return false;
-        },
-        musterCash: {
-            1: 20000,
-            2: 20000,
-            3: 30000,
-            4: 30000,
-            5: 50000,
-            6: 50000,
-            7: 50000
-        },
-        musterBenefits: function (dm) {
-            switch(roll(1) + dm) {
-                case 1:
-                    this.benefits.push('Low Passage');
-                    break;
-                case 2:
-                    this.attributes.intelligence += 2;
-                    break;
-                case 3:
-                    this.attributes.education += 2;
-                    break;
-                case 4:
-                    this.skills['blade'] += 1;
-                    break;
-                case 5:
-                    this.skills['gun'] += 1;
-                    break
-                case 6:
-                    if (this.benefits.indexOf('Scout Ship') > -1) {
-                        break;
-                    }
-                    this.benefits.push('Scout Ship');
-                    break;
-                default:
-                    this.attributes.social += 1;
-            }
         }
     },
-    merchants: {
-        serviceName: 'Merchants', // like "in the Navy"
-        memberName: 'Merchant', // like "Navy Admiral Nelson"
-        adjName: 'Merchant', // like "the Naval service"
-        enlistmentThrow: 7,
-        enlistmentDM: function (attributes) {
-            var dm = 0;
-            if (attributes.strength >= 7) { dm += 1; }
-            if (attributes.intelligence >= 6) { dm += 2; }
-            return dm;
-        },
-        checkSurvival: function (attributes) {
-            var dm = 0;
-            if (attributes.intelligence >= 7) { dm += 2; }
-            if ((roll(2) + dm) >= 5) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        reenlistThrow: 4,
-        ranks: {
-            1: '4th Officer',
-            2: '3rd Officer',
-            3: '2nd Officer',
-            4: '1st Officer',
-            5: 'Captain',
-            6: 'Captain'
-        },
-        checkPromotion: function (attributes) {
-            var dm = 0;
-            if (attributes.intelligence >= 9) { dm += 1; }
-            if ((roll(2) + dm) >= 10) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        checkCommission: function (attributes) {
-            var dm = 0;
-            if (attributes.intelligence >= 6) { dm += 1; }
-            if ((roll(2) + dm) >= 4) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        musterCash: {
-            1: 1000,
-            2: 5000,
-            3: 10000,
-            4: 20000,
-            5: 20000,
-            6: 40000,
-            7: 40000
-        },
-        musterBenefits: function (dm) {
-            switch(roll(1) + dm) {
-                case 1:
-                    this.benefits.push('Low Passage');
-                    break;
-                case 2:
-                    this.attributes.intelligence += 1;
-                    break;
-                case 3:
-                    this.attributes.education += 1;
-                    break;
-                case 4:
-                    this.skills['gun'] += 1;
-                    break;
-                case 5:
-                    this.skills['blade'] += 1;
-                    break
-                case 6:
-                    this.benefits.push('Low Passage');
-                    break;
-                default:
-                    this.benefits.push('Free Trader');
-            }
+    reenlistThrow: 6,
+    ranks: {
+        0: 'Starman',
+        1: 'Ensign',
+        2: 'Lieutenant',
+        3: 'Lt Cmdr',
+        4: 'Commander',
+        5: 'Captain',
+        6: 'Admiral'
+    },
+    checkPromotion: function (attributes) {
+        var dm = 0;
+        if (attributes.education >= 8) { dm += 1; }
+        if ((roll(2) + dm) >= 8) {
+            return true;
+        } else {
+            return false;
         }
     },
-    other: {
-        serviceName: 'other service', // like "in the Navy"
-        memberName: '', // like "Navy Admiral Nelson"
-        adjName: 'other', // like "the Naval service"
-        enlistmentThrow: 3,
-        enlistmentDM: function (attributes) {
-            var dm = 0;
-            return dm;
-        },
-        checkSurvival: function (attributes) {
-            var dm = 0;
-            if (attributes.intelligence >= 9) { dm += 2; }
-            if ((roll(2) + dm) >= 5) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        reenlistThrow: 5,
-        ranks: { 0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: '' },
-        checkPromotion: function (attributes) {
+    checkCommission: function(attributes) {
+        var dm = 0;
+        if (attributes.social >= 9) { dm += 1; }
+        if ((roll(2) + dm) >= 10) {
+            return true;
+        } else {
             return false;
-        },
-        checkCommission: function (attributes) {
-            return false;
-        },
-        musterCash: {
-            1: 1000,
-            2: 5000,
-            3: 10000,
-            4: 10000,
-            5: 10000,
-            6: 50000,
-            7: 100000
-        },
-        musterBenefits: function (dm) {
-            switch(roll(1) + dm) {
-                case 1:
-                    this.benefits.push('Low Passage');
-                    break;
-                case 2:
-                    this.attributes.intelligence += 1;
-                    break;
-                case 3:
-                    this.attributes.education += 1;
-                    break;
-                case 4:
-                    this.skills['gun'] += 1;
-                case 5:
-                    this.benefits.push('High Passage');
-                    break;
-                default:
-                    break;
-            }
         }
     },
+    doPromotion: function() {
+        if (this.rank == 5 || 6) {
+            this.attributes.social += 1;
+        }
+    },
+    musterCash: {
+        1: 1000,
+        2: 5000,
+        3: 5000,
+        4: 10000,
+        5: 20000,
+        6: 50000,
+        7: 50000
+    },
+    musterBenefits: function (dm) {
+        switch(roll(1) + dm) {
+            case 1:
+                this.benefits.push('Low Passage');
+                break;
+            case 2:
+                this.attributes.intelligence += 1;
+                break;
+            case 3:
+                this.attributes.education += 1;
+                break;
+            case 4:
+                this.addSkill('Blade');
+                break;
+            case 5:
+                if (this.benefits.indexOf("Travellers' Aide Society") > -1) {
+                    break;
+                }
+                this.benefits.push("Travellers' Aid Society");
+                break
+            case 6:
+                this.benefits.push('High Passage');
+                break;
+            default:
+                this.attributes.social += 2;
+        }
+    }
+};
+//---------------- Define "Marines" service ----------------//
+s.marines = {
+    serviceName: 'Marines', // like "in the Navy"
+    memberName: 'Marine', // like "Navy Admiral Nelson"
+    adjName: 'Marines', // like "the Naval service"
+    enlistmentThrow: 9,
+    enlistmentDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 8) { dm += 1; }
+        if (attributes.strength >= 8) { dm += 2; }
+        return dm;
+    },
+    getServiceSkills: function () { return ['Cutlass']; },
+    checkSurvival: function (attributes) {
+        var dm = 0;
+        if (attributes.endurance >= 8) { dm += 2; }
+        if ((roll(2) + dm) >= 6) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    reenlistThrow: 6,
+    ranks: {
+        0: '',
+        1: 'Lieutenant',
+        2: 'Captain',
+        3: 'Force Comdr',
+        4: 'Lt Colonel',
+        5: 'Colonel',
+        6: 'Brigadier'
+    },
+    checkPromotion: function (attributes) {
+        var dm = 0;
+        if (attributes.social >= 8) { dm += 1; }
+        if ((roll(2) + dm) >= 9) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    checkCommission: function(attributes) {
+        var dm = 0;
+        if (attributes.education >= 7) { dm += 1; }
+        if ((roll(2) + dm) >= 9) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    doPromotion: function() {
+        if (this.rank == 1) {
+            this.addSkill('Revolver');
+        }
+    },
+    musterCash: {
+        1: 2000,
+        2: 5000,
+        3: 5000,
+        4: 10000,
+        5: 20000,
+        6: 30000,
+        7: 40000
+    },
+    musterBenefits: function (dm) {
+        switch(roll(1) + dm) {
+            case 1:
+                this.benefits.push('Low Passage');
+                break;
+            case 2:
+                this.attributes.intelligence += 1;
+                break;
+            case 3:
+                this.attributes.education += 1;
+                break;
+            case 4:
+                this.addSkill('Blade');
+                break;
+            case 5:
+                if (this.benefits.indexOf("Travellers' Aide Society") > -1) {
+                    break;
+                }
+                this.benefits.push("Travellers' Aid Society");
+                break
+            case 6:
+                this.benefits.push('High Passage');
+                break;
+            default:
+                this.attributes.social += 2;
+        }
+    }
+};
+//---------------- Define "Army" service ----------------//
+s.army = {
+    serviceName: 'Army', // like "in the Navy"
+    memberName: 'Army', // like "Navy Admiral Nelson"
+    adjName: 'Army', // like "the Naval service"
+    enlistmentThrow: 5,
+    enlistmentDM: function (attributes) {
+        var dm = 0;
+        if (attributes.dexterity >= 6) { dm += 1; }
+        if (attributes.endurance >= 5) { dm += 2; }
+        return dm;
+    },
+    getServiceSkills: function () { return ['Rifle']; },
+    checkSurvival: function (attributes) {
+        var dm = 0;
+        if (attributes.education >= 5) { dm += 2; }
+        if ((roll(2) + dm) >= 5) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    reenlistThrow: 7,
+    ranks: {
+        0: 'Trooper',
+        1: 'Lieutenant',
+        2: 'Captain',
+        3: 'Major',
+        4: 'Lt Colonel',
+        5: 'Colonel',
+        6: 'General'
+    },
+    checkPromotion: function (attributes) {
+        var dm = 0;
+        if (attributes.education >= 7) { dm += 1; }
+        if ((roll(2) + dm) >= 6) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    checkCommission: function(attributes) {
+        var dm = 0;
+        if (attributes.endurance >= 7) { dm += 1; }
+        if ((roll(2) + dm) >= 5) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    doPromotion: function() {
+        if (this.rank == 1) {
+            this.addSkill('SMG');
+        }
+    },
+    musterCash: {
+        1: 2000,
+        2: 5000,
+        3: 10000,
+        4: 10000,
+        5: 10000,
+        6: 20000,
+        7: 30000
+    },
+    musterBenefits: function (dm) {
+        switch(roll(1) + dm) {
+            case 1:
+                this.benefits.push('Low Passage');
+                break;
+            case 2:
+                this.attributes.intelligence += 1;
+                break;
+            case 3:
+                this.attributes.education += 1;
+                break;
+            case 4:
+                this.addSkill('Gun');
+                break;
+            case 5:
+                this.benefits.push('High Passage');
+                break
+            case 6:
+                this.benefits.push('Middle Passage');
+                break;
+            default:
+                this.attributes.social += 1;
+        }
+    }
+};
+//---------------- Define "Scouts" service ----------------//
+s.scouts = {
+    serviceName: 'Scouts', // like "in the Navy"
+    memberName: 'Scout', // like "Navy Admiral Nelson"
+    adjName: 'Scout', // like "the Naval service"
+    enlistmentThrow: 7,
+    enlistmentDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 6) { dm += 1; }
+        if (attributes.strength >= 8) { dm += 2; }
+        return dm;
+    },
+    getServiceSkills: function () { return ['Pilot']; },
+    checkSurvival: function (attributes) {
+        var dm = 0;
+        if (attributes.endurance >= 9) { dm += 2; }
+        if ((roll(2) + dm) >= 7) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    reenlistThrow: 3,
+    ranks: { 0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: '' },
+    checkPromotion: function (attributes) {
+        return false;
+    },
+    checkCommission: function(attributes) {
+        return false;
+    },
+    doPromotion: function() { return; },
+    musterCash: {
+        1: 20000,
+        2: 20000,
+        3: 30000,
+        4: 30000,
+        5: 50000,
+        6: 50000,
+        7: 50000
+    },
+    musterBenefits: function (dm) {
+        switch(roll(1) + dm) {
+            case 1:
+                this.benefits.push('Low Passage');
+                break;
+            case 2:
+                this.attributes.intelligence += 2;
+                break;
+            case 3:
+                this.attributes.education += 2;
+                break;
+            case 4:
+                this.addSkill('Blade');
+                break;
+            case 5:
+                this.addSkill('Gun');
+                break
+            case 6:
+                if (this.benefits.indexOf('Scout Ship') > -1) {
+                    break;
+                }
+                this.benefits.push('Scout Ship');
+                break;
+            default:
+                this.attributes.social += 1;
+        }
+    }
+};
+//---------------- Define "Merchant" service ----------------//
+s.merchants = {
+    serviceName: 'Merchants', // like "in the Navy"
+    memberName: 'Merchant', // like "Navy Admiral Nelson"
+    adjName: 'Merchant', // like "the Naval service"
+    enlistmentThrow: 7,
+    enlistmentDM: function (attributes) {
+        var dm = 0;
+        if (attributes.strength >= 7) { dm += 1; }
+        if (attributes.intelligence >= 6) { dm += 2; }
+        return dm;
+    },
+    getServiceSkills: function () { return []; },
+    checkSurvival: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 7) { dm += 2; }
+        if ((roll(2) + dm) >= 5) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    reenlistThrow: 4,
+    ranks: {
+        1: '4th Officer',
+        2: '3rd Officer',
+        3: '2nd Officer',
+        4: '1st Officer',
+        5: 'Captain',
+        6: 'Captain'
+    },
+    checkPromotion: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 9) { dm += 1; }
+        if ((roll(2) + dm) >= 10) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    checkCommission: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 6) { dm += 1; }
+        if ((roll(2) + dm) >= 4) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    doPromotion: function() {
+        if (this.rank == 1) {
+            this.addSkill('Pilot');
+        }
+    },
+    doPromotion: function() { return; },
+    musterCash: {
+        1: 1000,
+        2: 5000,
+        3: 10000,
+        4: 20000,
+        5: 20000,
+        6: 40000,
+        7: 40000
+    },
+    musterBenefits: function (dm) {
+        switch(roll(1) + dm) {
+            case 1:
+                this.benefits.push('Low Passage');
+                break;
+            case 2:
+                this.attributes.intelligence += 1;
+                break;
+            case 3:
+                this.attributes.education += 1;
+                break;
+            case 4:
+                this.addSkill('Gun');
+                break;
+            case 5:
+                this.addSkill('Blade');
+                break
+            case 6:
+                this.benefits.push('Low Passage');
+                break;
+            default:
+                this.benefits.push('Free Trader');
+        }
+    }
+};
+//---------------- Define "Other" service ----------------//
+s.other = {
+    serviceName: 'other service', // like "in the Navy"
+    memberName: '', // like "Navy Admiral Nelson"
+    adjName: 'other', // like "the Naval service"
+    enlistmentThrow: 3,
+    enlistmentDM: function (attributes) {
+        var dm = 0;
+        return dm;
+    },
+    getServiceSkills: function () { return []; },
+    checkSurvival: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 9) { dm += 2; }
+        if ((roll(2) + dm) >= 5) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    reenlistThrow: 5,
+    ranks: { 0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: '' },
+    checkPromotion: function (attributes) {
+        return false;
+    },
+    checkCommission: function (attributes) {
+        return false;
+    },
+    doPromotion: function() { return; },
+    musterCash: {
+        1: 1000,
+        2: 5000,
+        3: 10000,
+        4: 10000,
+        5: 10000,
+        6: 50000,
+        7: 100000
+    },
+    musterBenefits: function (dm) {
+        switch(roll(1) + dm) {
+            case 1:
+                this.benefits.push('Low Passage');
+                break;
+            case 2:
+                this.attributes.intelligence += 1;
+                break;
+            case 3:
+                this.attributes.education += 1;
+                break;
+            case 4:
+                this.addSkill('Gun');
+            case 5:
+                this.benefits.push('High Passage');
+                break;
+            default:
+                break;
+        }
+    }
 };
 
+//------------ "t" object holds Traveller character definitions ------------//
 var t = {};
 t.age = 18;
 t.gender = function () {
@@ -557,15 +592,27 @@ t.getAttrString = function () {
         + decToHex(t.attributes.education)
         + decToHex(t.attributes.social);
 };
+t.skillPoints = 1;
+t.skills = {};
+t.addSkill = function (skill, skillLevel) {
+    if (! skillLevel) {
+        var skillLevel = 1;
+    }
+    if (skill in t.skills) {
+        t.skills[skill] += skillLevel;
+    } else {
+        t.skills[skill] = skillLevel;
+    }
+};
 t.service = function() {
     // In which service should we try to enlist?
-    var preferredService = arnd(service.services);
+    var preferredService = arnd(s.services);
     var preferredServiceDM = 1;
     var thisService;
     var thisServiceDM;
-    for (var i = 0, limit = service.services.length; i < limit; i++) {
-        thisService = service.services[i];
-        thisServiceDM = service[thisService].enlistmentDM(t.attributes);
+    for (var i = 0, limit = s.services.length; i < limit; i++) {
+        thisService = s.services[i];
+        thisServiceDM = s[thisService].enlistmentDM(t.attributes);
         if (thisServiceDM > preferredServiceDM) {
             preferredService = thisService;
             preferredServiceDM = thisServiceDM;
@@ -578,14 +625,22 @@ t.service = function() {
     }
     // Attempt to enlist
     t.history.push('Attempted to enlist in '
-        + service[preferredService].serviceName + '.');
-    if ((roll(2) + preferredServiceDM) >= service[preferredService].enlistmentThrow) {
+        + s[preferredService].serviceName + '.');
+    if ((roll(2) + preferredServiceDM) >= s[preferredService].enlistmentThrow) {
         t.history.push('Enlistment accepted.');
+        var serviceSkills = s[preferredService].getServiceSkills();
+        for (var i = 0, limit = serviceSkills.length; i < limit; i++) {
+            t.addSkill(serviceSkills[i]);
+        }
         return preferredService;
     } else {
         t.history.push('Enlistment denied.');
-        var draftService = service.draft();
+        var draftService = s.draft();
         t.history.push('Drafted into ' + draftService + '.')
+        var serviceSkills = s[draftService].getServiceSkills();
+        for (var i = 0, limit = serviceSkills.length; i < limit; i++) {
+            t.addSkill(serviceSkills[i]);
+        }
         return draftService;
     }
 }();
@@ -598,25 +653,33 @@ t.retirementPay = 0;
 t.doServiceTerm = function () {
     t.terms += 1;
     t.age += 4;
+    if (t.service == 'scouts') {
+        t.skillPoints += 2;
+    } else {
+        t.skillPoints += 1;
+    }
     // Check commission:
     if (! t.commissioned) {
-        if (service[t.service].checkCommission(t.attributes)) {
+        if (s[t.service].checkCommission(t.attributes)) {
             t.commissioned = true;
             t.rank += 1;
+            t.skillPoints += 1;
+            s[t.service].doPromotion.call(t);
             t.history.push('Commissioned during '
                 + intToOrdinal(t.terms) + ' term of service.');
         }
     }
     // Try for promotion:
     if (t.commissioned && (t.rank < 6)) {
-        if (service[t.service].checkPromotion(t.attributes)) {
+        if (s[t.service].checkPromotion(t.attributes)) {
             t.rank += 1;
+            t.skillPoints += 1;
             t.history.push('Promoted to '
-                + service[t.service].ranks[t.rank] + '.');
+                + s[t.service].ranks[t.rank] + '.');
         }
     }
     // Check survival:
-    if (! service[t.service].checkSurvival(t.attributes)) {
+    if (! s[t.service].checkSurvival(t.attributes)) {
         t.history.push('Death in service.');
         t.deceased = true;
     }
@@ -639,9 +702,9 @@ t.musterOut = function () {
     }
     for (var i = 0, limit = musterRolls; i <= limit; i++) {
         if (i <= 3) {
-            t.credits += service[t.service].musterCash[roll(1) + benefitsDM];
+            t.credits += s[t.service].musterCash[roll(1) + benefitsDM];
         } else {
-            service[t.service].musterBenefits.call(t, benefitsDM)
+            s[t.service].musterBenefits.call(t, benefitsDM)
         }
     }
     // Figure annual retirement pay:
@@ -678,11 +741,11 @@ t.doReenlistment = function () {
         t.activeDuty = false;
         t.history.push('Mandatory retirement after '
             + intToOrdinal(t.terms) + ' term.');
-    } else if (reenlistRoll < service[t.service].reenlistThrow) {
+    } else if (reenlistRoll < s[t.service].reenlistThrow) {
         t.activeDuty = false;
         t.history.push('Denied reenlistment after '
             + intToOrdinal(t.terms) + ' term.');
-    } else if (reenlistRoll >= service[t.service].reenlistThrow) {
+    } else if (reenlistRoll >= s[t.service].reenlistThrow) {
         if (roll(2) >= 10) {
             if (t.terms < 5) {
                 t.activeDuty = false;
@@ -771,7 +834,6 @@ t.getNobleTitle = function () {
             return '';
     }
 };
-t.skills = {};
 t.toString = function () {
     return (function() {
             if (this.deceased) {
@@ -782,11 +844,11 @@ t.toString = function () {
         }).call(this)
         + (function () {
             if (this.service == 'other') { return ''; }
-            return service[this.service].memberName + ' ';
+            return s[this.service].memberName + ' ';
         }).call(this)
         + (function () {
-            if (service[this.service].ranks[this.rank] != '') {
-                return service[this.service].ranks[this.rank] + ' ';
+            if (s[this.service].ranks[this.rank] != '') {
+                return s[this.service].ranks[this.rank] + ' ';
             } else {
                 return '';
             }
@@ -826,7 +888,7 @@ t.toString = function () {
         + (function () {
             if (this.benefits.length > 0) {
                 this.benefits.sort();
-                var benefits = '\nBenefits: ';
+                var benefits = "\nBenefits: ";
                 for (var i = 0, limit = this.benefits.length; i < limit; i++) {
                     if (i < limit - 1) {
                         benefits += this.benefits[i] + ', ';
@@ -836,7 +898,18 @@ t.toString = function () {
                 }
                 return benefits;
             } else { return '' }
-        }).call(this) ;
+        }).call(this)
+        + (function () {
+            var skillList = '';
+            for (skill in t.skills) {
+                skillList += skill + '-' + t.skills[skill] + ' ';
+            }
+            if ((skillList !== '') && (! t.deceased)) {
+                return "\nSkills: " + skillList;
+            } else {
+                return '';
+            }
+        }).call(this);
 };
 
 while (t.activeDuty && (! t.deceased)) {
