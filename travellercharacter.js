@@ -644,15 +644,21 @@ t.getAttrString = function () {
         + decToHex(t.attributes.social);
 };
 t.skillPoints = 1;
-t.skills = {};
+t.skills = [];
 t.addSkill = function (skill, skillLevel) {
     if (! skillLevel) {
         var skillLevel = 1;
     }
-    if (skill in t.skills) {
-        t.skills[skill] += skillLevel;
-    } else {
-        t.skills[skill] = skillLevel;
+    if (t.skills.length == 0) {
+        t.skills.push([skill, skillLevel]);
+        return;
+    }
+    for (var i = 0, limit = t.skills.length; i < limit; i++) {
+        if (t.skills[i][0] == skill) {
+            t.skills[i][1] += skillLevel;
+        } else {
+            t.skills.push([skill, skillLevel]);
+        }
     }
 };
 t.service = function() {
@@ -952,14 +958,12 @@ t.toString = function () {
         }).call(this)
         + (function () {
             var skillList = '';
-            for (skill in t.skills) {
-                skillList += skill + '-' + t.skills[skill] + ' ';
+            if (t.skills.length < 1) { return ''; }
+            var skillString = "\nSkills: ";
+            for (var i = 0, limit = t.skills.length; i < limit; i++) {
+                skillString += t.skills[i][0] + '-' + t.skills[i][1] + ' ';
             }
-            if ((skillList !== '') && (! t.deceased)) {
-                return "\nSkills: " + skillList;
-            } else {
-                return '';
-            }
+            return skillString;
         }).call(this);
 };
 
