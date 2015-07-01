@@ -69,6 +69,29 @@ function generateName(gender) {
     return arnd(given) + ' ' + arnd(family);
 }
 
+function amatch(a1, a2) {
+    // Return first element in array a1 also present in array a2.
+    for (var i = 0, limit = a1.length; i < limit; i++) {
+        if (a2.indexOf(a1[i]) > -1) {
+            return ai[i];
+        } else {
+            return false;
+        }
+    }
+}
+
+//-------- "skill" holds service-independent skill definitions --------//
+var skills = {};
+skills.getBlade = function () {
+    var blades = ['Dagger', 'Foil', 'Sword', 'Cutlass', 'Broadsword', 'Bayonet', 'Spear', 'Halberd', 'Pike', 'Cudgel'];
+    // Call with skills.getBlade.call(t)
+    if (this.service == 'marine') {
+        return 'Cutlass';
+    } else if (amatch()) {
+////////////////////////////////////-----------------------------------
+    }
+}
+
 //---------------- "s" object holds service definitions ----------------//
 var s = {};
 s.services = ['navy', 'marines', 'army', 'scouts', 'merchants', 'other'];
