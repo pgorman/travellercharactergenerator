@@ -645,6 +645,15 @@ t.getAttrString = function () {
 };
 t.skillPoints = 1;
 t.skills = [];
+t.checkSkill = function (skill) {
+    var skillKnown = false;
+    for (var i = 0, limit = t.skills.length; i < limit; i++) {
+        if (t.skills[i][0] == skill) {
+            skillKnown = true;
+        }
+    }
+    return skillKnown;
+}
 t.addSkill = function (skill, skillLevel) {
     if (! skillLevel) {
         var skillLevel = 1;
@@ -653,12 +662,14 @@ t.addSkill = function (skill, skillLevel) {
         t.skills.push([skill, skillLevel]);
         return;
     }
-    for (var i = 0, limit = t.skills.length; i < limit; i++) {
-        if (t.skills[i][0] == skill) {
-            t.skills[i][1] += skillLevel;
-        } else {
-            t.skills.push([skill, skillLevel]);
+    if (t.checkSkill(skill)) {
+        for (var i = 0, limit = t.skills.length; i < limit; i++) {
+            if (t.skills[i][0] == skill) {
+                t.skills[i][1] += skillLevel;
+            }
         }
+    } else {
+        t.skills.push([skill, skillLevel]);
     }
 };
 t.service = function() {
@@ -754,7 +765,7 @@ t.musterOut = function () {
         benefitsDM += 1;
         musterRolls += 3;
     }
-    if ('gambling' in t.skills) {
+    if (t.checkSkill('Gambling')) {
         benefitsDM += 1;
     }
     for (var i = 0, limit = musterRolls; i <= limit; i++) {
@@ -958,7 +969,7 @@ t.toString = function () {
         }).call(this)
         + (function () {
             var skillList = '';
-            if (t.skills.length < 1) { return ''; }
+            if ((t.skills.length < 1) || (t.deceased)) { return ''; }
             var skillString = "\nSkills: ";
             for (var i = 0, limit = t.skills.length; i < limit; i++) {
                 skillString += t.skills[i][0] + '-' + t.skills[i][1] + ' ';
