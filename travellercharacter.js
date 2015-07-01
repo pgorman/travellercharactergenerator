@@ -6,6 +6,10 @@ String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
+function rndInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 function arnd(a) {
     // Return random element of array a.
     var i = Math.floor(Math.random() * (a.length));
@@ -160,6 +164,30 @@ s.navy = {
                 break;
             default:
                 this.attributes.social += 2;
+        }
+    },
+    acquireSkill: function () {
+        // Skills acquired during a term of service.
+        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+            case 1:
+                switch(roll(1)) {
+                    case 1: this.attributes.strength += 1; break;
+                    case 2: this.attributes.dexterity += 1; break;
+                    case 3: this.attributes.endurance += 1; break;
+                    case 4: this.attributes.intelligence += 1; break;
+                    case 5: this.attributes.education += 1; break;
+                    default: this.attributes.social += 1;
+                }
+                break;
+            case 2:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Ships_Boat'); break;
+                    case 2: this.addSkill('Vacc_Suit'); break;
+                    case 3: this.addSkill('Fwd_Obsvr'); break;
+                    case 4: this.addSkill('Gunnery'); break;
+                    case 5: this.addSkill('Blade'); break;
+                    default: this.addSkill('Gun'); break;
+                }
         }
     }
 };
