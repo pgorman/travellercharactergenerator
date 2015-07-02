@@ -204,13 +204,34 @@ s.navy = {
                 break;
             case 2:
                 switch(roll(1)) {
-                    case 1: this.addSkill('Ships_Boat'); break;
-                    case 2: this.addSkill('Vacc_Suit'); break;
-                    case 3: this.addSkill('Fwd_Obsvr'); break;
+                    case 1: this.addSkill("Ship's Boat"); break;
+                    case 2: this.addSkill('Vacc Suit'); break;
+                    case 3: this.addSkill('Fwd Obsvr'); break;
                     case 4: this.addSkill('Gunnery'); break;
                     case 5: this.addSkill('Blade'); break;
-                    default: this.addSkill('Gun'); break;
+                    default: this.addSkill('Gun');
                 }
+                break;
+            case 3:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Vacc Suit'); break;
+                    case 2: this.addSkill('Mechanical'); break;
+                    case 3: this.addSkill('Electronic'); break;
+                    case 4: this.addSkill('Engineering'); break;
+                    case 5: this.addSkill('Gunnery'); break;
+                    default: this.addSkill('Jack-o-T');
+                }
+                break;
+            case 4:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Medical'); break;
+                    case 2: this.addSkill('Navigation'); break;
+                    case 3: this.addSkill('Engineering'); break;
+                    case 4: this.addSkill('Computer'); break;
+                    case 5: this.addSkill('Pilot'); break;
+                    default: this.addSkill('Admin');
+                }
+                break;
         }
     }
 };
@@ -304,6 +325,50 @@ s.marines = {
             default:
                 this.attributes.social += 2;
         }
+    },
+    acquireSkill: function () {
+        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+            case 1:
+                switch(roll(1)) {
+                    case 1: this.attributes.strength += 1; break;
+                    case 2: this.attributes.dexterity += 1; break;
+                    case 3: this.attributes.endurance += 1; break;
+                    case 4: this.addSkill('Gambling'); break;
+                    case 5: this.addSkill('Brawling'); break;
+                    default: this.addSkill('Blade Cbt');
+                }
+                break;
+            case 2:
+                switch(roll(1)) {
+                    case 1: this.addSkill('ATV'); break;
+                    case 2: this.addSkill('Vacc Suit'); break;
+                    case 3: this.addSkill('Blade Cbt'); break;
+                    case 4: this.addSkill('Gun Cbt'); break;
+                    case 5: this.addSkill('Blade Cbt'); break;
+                    default: this.addSkill('Gun Cbt');
+                }
+                break;
+            case 3:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Vehicle'); break;
+                    case 2: this.addSkill('Mechanical'); break;
+                    case 3: this.addSkill('Electronic'); break;
+                    case 4: this.addSkill('Tactics'); break;
+                    case 5: this.addSkill('Blade Cbt'); break;
+                    default: this.addSkill('Gun Cbt');
+                }
+                break;
+            case 4:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Medical'); break;
+                    case 2: this.addSkill('Tactics'); break;
+                    case 3: this.addSkill('Tactics'); break;
+                    case 4: this.addSkill('Computer'); break;
+                    case 5: this.addSkill('Leader'); break;
+                    default: this.addSkill('Admin');
+                }
+                break;
+        }
     }
 };
 //---------------- Define "Army" service ----------------//
@@ -393,6 +458,50 @@ s.army = {
             default:
                 this.attributes.social += 1;
         }
+    },
+    acquireSkill: function () {
+        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+            case 1:
+                switch(roll(1)) {
+                    case 1: this.attributes.strength += 1; break;
+                    case 2: this.attributes.dexterity += 1; break;
+                    case 3: this.attributes.endurance += 1; break;
+                    case 4: this.addSkill('Gambling'); break;
+                    case 5: this.attributes.education += 1; break;
+                    default: this.addSkill('Brawling');
+                }
+                break;
+            case 2:
+                switch(roll(1)) {
+                    case 1: this.addSkill('ATV'); break;
+                    case 2: this.addSkill('Air/Raft'); break;
+                    case 3: this.addSkill('Gun Cbt'); break;
+                    case 4: this.addSkill('Fwd Obsvr'); break;
+                    case 5: this.addSkill('Blade Cbt'); break;
+                    default: this.addSkill('Gun Cbt');
+                }
+                break;
+            case 3:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Vehicle'); break;
+                    case 2: this.addSkill('Mechanical'); break;
+                    case 3: this.addSkill('Electronic'); break;
+                    case 4: this.addSkill('Tactics'); break;
+                    case 5: this.addSkill('Blade Cbt'); break;
+                    default: this.addSkill('Gun Cbt');
+                }
+                break;
+            case 4:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Medical'); break;
+                    case 2: this.addSkill('Tactics'); break;
+                    case 3: this.addSkill('Tactics'); break;
+                    case 4: this.addSkill('Computer'); break;
+                    case 5: this.addSkill('Leader'); break;
+                    default: this.addSkill('Admin');
+                }
+                break;
+        }
     }
 };
 //---------------- Define "Scouts" service ----------------//
@@ -460,6 +569,50 @@ s.scouts = {
                 break;
             default:
                 this.attributes.social += 1;
+        }
+    },
+    acquireSkill: function () {
+        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+            case 1:
+                switch(roll(1)) {
+                    case 1: this.attributes.strength += 1; break;
+                    case 2: this.attributes.dexterity += 1; break;
+                    case 3: this.attributes.endurance += 1; break;
+                    case 4: this.attributes.intelligence += 1; break;
+                    case 5: this.attributes.education += 1; break;
+                    default: this.addSkill('Gun Cbt');
+                }
+                break;
+            case 2:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Air/Raft'); break;
+                    case 2: this.addSkill('Vacc Suit'); break;
+                    case 3: this.addSkill('Mechanical'); break;
+                    case 4: this.addSkill('Navigation'); break;
+                    case 5: this.addSkill('Electronics'); break;
+                    default: this.addSkill('Jack-o-T');
+                }
+                break;
+            case 3:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Vehicle'); break;
+                    case 2: this.addSkill('Mechanical'); break;
+                    case 3: this.addSkill('Electronic'); break;
+                    case 4: this.addSkill('Jack-o-T'); break;
+                    case 5: this.addSkill('Gunnery'); break;
+                    default: this.addSkill('Medical');
+                }
+                break;
+            case 4:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Medical'); break;
+                    case 2: this.addSkill('Navigation'); break;
+                    case 3: this.addSkill('Engineering'); break;
+                    case 4: this.addSkill('Computer'); break;
+                    case 5: this.addSkill('Pilot'); break;
+                    default: this.addSkill('Jack-o-T');
+                }
+                break;
         }
     }
 };
@@ -550,6 +703,50 @@ s.merchants = {
             default:
                 this.benefits.push('Free Trader');
         }
+    },
+    acquireSkill: function () {
+        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+            case 1:
+                switch(roll(1)) {
+                    case 1: this.attributes.strength += 1; break;
+                    case 2: this.attributes.dexterity += 1; break;
+                    case 3: this.attributes.endurance += 1; break;
+                    case 4: this.attributes.strength += 1; break;
+                    case 5: this.addSkill('Blade Cbt'); break;
+                    default: this.addSkill('Bribery');
+                }
+                break;
+            case 2:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Vehicle'); break;
+                    case 2: this.addSkill('Vacc Suit'); break;
+                    case 3: this.addSkill('Jack-o-T'); break;
+                    case 4: this.addSkill('Steward'); break;
+                    case 5: this.addSkill('Electronics'); break;
+                    default: this.addSkill('Gun Cbt');
+                }
+                break;
+            case 3:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Streetwise'); break;
+                    case 2: this.addSkill('Mechianical'); break;
+                    case 3: this.addSkill('Electronic'); break;
+                    case 4: this.addSkill('Navigation'); break;
+                    case 5: this.addSkill('Gunnery'); break;
+                    default: this.addSkill('Medical');
+                }
+                break;
+            case 4:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Medical'); break;
+                    case 2: this.addSkill('Navigation'); break;
+                    case 3: this.addSkill('Engineering'); break;
+                    case 4: this.addSkill('Computer'); break;
+                    case 5: this.addSkill('Pilot'); break;
+                    default: this.addSkill('Admin');
+                }
+                break;
+        }
     }
 };
 //---------------- Define "Other" service ----------------//
@@ -609,6 +806,50 @@ s.other = {
             default:
                 break;
         }
+    },
+    acquireSkill: function () {
+        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+            case 1:
+                switch(roll(1)) {
+                    case 1: this.attributes.strength += 1; break;
+                    case 2: this.attributes.dexterity += 1; break;
+                    case 3: this.attributes.endurance += 1; break;
+                    case 4: this.addSkill('Blade Cbt'); break;
+                    case 5: this.addSkill('Brawling'); break;
+                    default: this.attributes.social -= 1;
+                }
+                break;
+            case 2:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Vehicle'); break;
+                    case 2: this.addSkill('Gambling'); break;
+                    case 3: this.addSkill('Brawling'); break;
+                    case 4: this.addSkill('Bribery'); break;
+                    case 5: this.addSkill('Blade Cbt'); break;
+                    default: this.addSkill('Gun Cbt');
+                }
+                break;
+            case 3:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Streetwise'); break;
+                    case 2: this.addSkill('Mechianical'); break;
+                    case 3: this.addSkill('Electronic'); break;
+                    case 4: this.addSkill('Gambling'); break;
+                    case 5: this.addSkill('Brawling'); break;
+                    default: this.addSkill('Forgery');
+                }
+                break;
+            case 4:
+                switch(roll(1)) {
+                    case 1: this.addSkill('Medical'); break;
+                    case 2: this.addSkill('Forgery'); break;
+                    case 3: this.addSkill('Electronics'); break;
+                    case 4: this.addSkill('Computer'); break;
+                    case 5: this.addSkill('Streetwise'); break;
+                    default: this.addSkill('Jack-o-T');
+                }
+                break;
+        }
     }
 };
 
@@ -657,10 +898,6 @@ t.checkSkill = function (skill) {
 t.addSkill = function (skill, skillLevel) {
     if (! skillLevel) {
         var skillLevel = 1;
-    }
-    if (t.skills.length == 0) {
-        t.skills.push([skill, skillLevel]);
-        return;
     }
     if (t.checkSkill(skill)) {
         for (var i = 0, limit = t.skills.length; i < limit; i++) {
@@ -745,6 +982,10 @@ t.doServiceTerm = function () {
             t.history.push('Promoted to '
                 + s[t.service].ranks[t.rank] + '.');
         }
+    }
+    for (i = 0, limit = t.skillPoints; i < limit; i++) {
+        s[t.service].acquireSkill.call(t);
+        t.skillPoints -= 1;
     }
     // Check survival:
     if (! s[t.service].checkSurvival(t.attributes)) {
@@ -968,11 +1209,18 @@ t.toString = function () {
             } else { return '' }
         }).call(this)
         + (function () {
-            var skillList = '';
             if ((t.skills.length < 1) || (t.deceased)) { return ''; }
-            var skillString = "\nSkills: ";
+            var skills = [];
             for (var i = 0, limit = t.skills.length; i < limit; i++) {
-                skillString += t.skills[i][0] + '-' + t.skills[i][1] + ' ';
+                skills.push(t.skills[i][0] + '-' + t.skills[i][1]);
+            }
+            skills.sort();
+            var skillString = "\nSkills: ";
+            for (var i = 0, limit = skills.length; i < limit; i++) {
+                skillString += skills[i];
+                if (i !== limit - 1) {
+                    skillString += ', '
+                }
             }
             return skillString;
         }).call(this);
