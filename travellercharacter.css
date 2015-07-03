@@ -1,6 +1,26 @@
+@media screen {
+    body {
+        background: #000;
+        color: #fff;
+    }
+}
+@media print {
+    body {
+        background: #fff;
+        color: #000;
+    }
+    #noprintheader {
+        display: none;
+    }
+}
 body {
-    background:#000;
-    color:#fff;
-    font-family:"Dejavu Sans Mono", Inconsolata, Monaco, Courier, monospace;
-    font-size:12pt;
+    background: #000;
+    color: #fff;
+    font-family: "Dejavu Sans Mono", Inconsolata, Monaco, Courier, monospace;
+    font-size: 12pt;
+    padding: 1em 4em 1em 4em;
+}
+#travchar {
+    white-space: pre-wrap;
+    width: 45em;
 }

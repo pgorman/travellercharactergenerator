@@ -1,10 +1,10 @@
-function travellerCharacterGenerator(output) {
+function travellerCharacter(output) {
 // output is 'text', 'html', or 'JSON'.
 
 String.prototype.capitalize = function() {
     // Accept "word" and return "Word".
     return this.charAt(0).toUpperCase() + this.slice(1);
-}
+};
 
 function rndInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -33,11 +33,6 @@ function decToHex(n) {
     return n.toString(16).toUpperCase();
 }
 
-function hexToDec(n) {
-    // Convert hexadecimal to decimal.
-    return parseInt(n, 16);
-}
-
 function numCommaSep(n) {
     // Format numbers like 1,000,000.
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -60,17 +55,18 @@ function intToOrdinal(i) {
 }
 
 function generateName(gender) {
+    var given = [];
     if (gender == 'female') { // Female names
-        var given = ['Alice', 'Ananya', 'Cai', 'Chloe', 'Emily', 'Emma', 'Esperanza', 'Fang', 'Fatima', 'Freja', 'Harper', 'Isidora', 'Kayla', 'Khadija', 'Lena', 'Malika', 'Mariam', 'Mary', 'Martha', 'Milagrosa', 'Nadia', 'Nina', 'Olivia', 'Petra', 'Rin', 'Sara', 'Shu', 'Sophia', 'Trisha', 'Valentina', 'Victoria', 'Xia', 'Yan', 'Zhen', 'Zoe'];
+        given = ['Alice', 'Ananya', 'Beatriz', 'Cai', 'Chloe', 'Darpana', 'Elena', 'Emily', 'Emma', 'Esperanza', 'Fang', 'Fatima', 'Freja', 'Harper', 'Ida', 'Isidora', 'Kana', 'Kayla', 'Khadija', 'Lena', 'Malika', 'Manon', 'Mariam', 'Marie', 'Mary', 'Martha', 'Milagrosa', 'Nadia', 'Nina', 'Olivia', 'Petra', 'Rin', 'Rosalie', 'Sara', 'Shu', 'Sophia', 'Trisha', 'Valentina', 'Victoria', 'Vivien', 'Xia', 'Yan', 'Zhen', 'Zoe'];
     } else {
-        var given = ['Adam', 'Ahmed', 'Ali', 'An', 'Andrew', 'Antonio', 'Aarav', 'Aziz', 'Bartholomew', 'Ben', 'Bo', 'Brom', 'Bruno', 'Charles', 'Cheng', 'Daniel', 'David', 'Diego', 'Feng', 'Finn', 'Gabriel', 'George', 'Hamza', 'Haruto', 'Hiroto', 'Jack', 'Jacob', 'James', 'John', 'Juan', 'Judas', 'Leo', 'Logan', 'Luis', 'Luke', 'Mark', 'Mehmet', 'Mohamed', 'Nicolas', 'Noam', 'Oliver', 'Omar', 'Paul', 'Peng', 'Philip', 'Rachid', 'Ren', 'Said', 'Santino', 'Simon', 'Stefan', 'Thaddaeus', 'Thomas', 'Victor', 'William', 'Wei', 'Wen', 'Yi', 'Youssef'];
+        given = ['Adam', 'Ahmed', 'Ali', 'An', 'Andrew', 'Antonio', 'Aarav', 'Aziz', 'Bartholomew', 'Ben', 'Bo', 'Brom', 'Bruno', 'Charles', 'Cheng', 'Daniel', 'David', 'Diego', 'Feng', 'Finn', 'Gabriel', 'George', 'Hamza', 'Haruto', 'Hiroto', 'Hugo', 'Jack', 'Jacob', 'James', 'John', 'Juan', 'Judas', 'Leo', 'Logan', 'Luis', 'Luke', 'Magnus', 'Mark', 'Mehmet', 'Mohamed', 'Nicolas', 'Noam', 'Oliver', 'Omar', 'Paul', 'Peng', 'Philip', 'Quentin', 'Rachid', 'Ren', 'Said', 'Santino', 'Simon', 'Stanisław', 'Stefan', 'Thaddaeus', 'Thomas', 'Victor', 'William', 'Wei', 'Wen', 'Yi', 'Youssef'];
     }
-    var family = ['Abe', 'Anderson', 'Becker', 'Bauer', 'Brown', 'Chang', 'Chen', 'Chu', 'Cohen', 'Colombo', 'Cruz', 'Das', 'Davies', 'Díaz', 'Dubois', 'Esposito', 'Evans', 'Fernandes', 'Fontana', 'Fujii', 'García', 'Green', 'Gruber', 'Hall', 'Hernández', 'Hoffmann', 'Hon', 'Itō', 'Ivanov', 'Jensen', 'Jones', 'Kask', 'Katz', 'Kelly', 'Khan', 'Kim', 'Klein', 'Kowalski', 'Larsen', 'Lee', 'Li', 'Lin', 'Ma', 'Martin', 'Mirza', 'Moreau', 'Murphy', 'Novák', 'Ota', 'Papadopoulos', 'Pérez', 'Petrov', 'Pavlov', 'Popov', 'Quinn', 'Reyes', 'Rizzo', 'Robinson', 'Rodríguez', 'Rossi', 'Saar', 'Santos', 'Satō', 'Schmidt', 'Silva', 'Sokolov', 'Sullivan', 'Sun', 'Suzuki', 'Singh', 'Smith', 'Tamm', 'Tanaka', 'Taylor', 'Varga', 'Wagner', 'Wang', 'Watanabe', 'Weber', 'Wen', 'White', 'Williams', 'Wilson', 'Wood', 'Wu', 'Yang', 'Zhang'];
+    var family = ['Abe', 'Anderson', 'Bautista', 'Bauer', 'Becker', 'Brown', 'Chang', 'Chen', 'Chu', 'Cohen', 'Colombo', 'Cruz', 'Das', 'Das', 'Davies', 'Díaz', 'Dubois', 'Esposito', 'Evans', 'Fernandes', 'Fontana', 'Fujii', 'García', 'Gazi', 'Green', 'Gruber', 'Hall', 'Han', 'Hernández', 'Hoffmann', 'Hon', 'Hong', 'Itō', 'Ivanov', 'Jensen', 'Jones', 'Kask', 'Katz', 'Kelly', 'Khan', 'Kim', 'Klein', 'Kowalski', 'Larsen', 'Lee', 'Li', 'Lin', 'Ma', 'Martin', 'Mirza', 'Moreau', 'Murphy', 'Nakamura', 'Novák', 'Ota', 'Papadopoulos', 'Pérez', 'Petrov', 'Pavlov', 'Popov', 'Quinn', 'Reyes', 'Rizzo', 'Robinson', 'Rodríguez', 'Rossi', 'Saar', 'Santos', 'Satō', 'Schmidt', 'Shin', 'Silva', 'Sokolov', 'Sullivan', 'Sun', 'Suzuki', 'Singh', 'Smith', 'Tamm', 'Tanaka', 'Taylor', 'Varga', 'Wagner', 'Wang', 'Watanabe', 'Weber', 'Wen', 'White', 'Williams', 'Wilson', 'Wood', 'Wu', 'Yamamoto', 'Yamazaki', 'Yang', 'Zhang'];
     return arnd(given) + ' ' + arnd(family);
 }
 
 //------------------------ Cascade Skills ------------------------//
-cascadeBlade = function (skills) {
+function cascadeBlade(skills) {
     // Call like cascadeBlade(t.skills)
     var blades = ['Dagger', 'Foil', 'Sword', 'Cutlass', 'Broadsword', 'Bayonet', 'Spear', 'Halberd', 'Pike', 'Cudgel'];
     var knownBlades = [];
@@ -85,8 +81,8 @@ cascadeBlade = function (skills) {
         return arnd(blades);
     }
 }
-cascadeGun = function (skills) {
-    // Call like cascadeBlade(t.skills)
+function cascadeGun(skills) {
+    // Call like cascadeGun(t.skills)
     var guns = ['Body Pistol', 'Auto Pistol', 'Revolver', 'Carbine', 'Rifle', 'Auto Rifle', 'Shotgun', 'SMG', 'Laser Carbine', 'Laser Rifle'];
     var knownGuns = [];
     for (var i = 0, limit = skills.length; i < limit; i++) {
@@ -98,6 +94,21 @@ cascadeGun = function (skills) {
         return arnd(knownGuns);
     } else {
         return arnd(guns);
+    }
+}
+function cascadeVehicle(skills) {
+    // Call like cascadeVehicle(t.skills)
+    var vehicles = ['Prop-Driven Aircraft', 'Jet-Driven Aircraft', 'Helicopter', 'Grav Vehicle', 'Tracked Vehicle', 'Wheeled Vehicle', 'Large Watercraft', 'Small Watercraft', 'Hovercraft', 'Submersible'];
+    var knownVehicles = [];
+    for (var i = 0, limit = skills.length; i < limit; i++) {
+        if (vehicles.indexOf(skills[i][0]) > -1) {
+            knownVehicles.push(skills[i][0]);
+        }
+    }
+    if (knownVehicles.length > 0) {
+        return arnd(knownVehicles);
+    } else {
+        return arnd(vehicles);
     }
 }
 
@@ -190,7 +201,7 @@ s.navy = {
                     break;
                 }
                 this.benefits.push("Travellers' Aid Society");
-                break
+                break;
             case 6:
                 this.benefits.push('High Passage');
                 break;
@@ -225,7 +236,7 @@ s.navy = {
                 switch(roll(1)) {
                     case 1: this.addSkill('Vacc Suit'); break;
                     case 2: this.addSkill('Mechanical'); break;
-                    case 3: this.addSkill('Electronic'); break;
+                    case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Engineering'); break;
                     case 5: this.addSkill('Gunnery'); break;
                     default: this.addSkill('Jack-o-T');
@@ -327,7 +338,7 @@ s.marines = {
                     break;
                 }
                 this.benefits.push("Travellers' Aid Society");
-                break
+                break;
             case 6:
                 this.benefits.push('High Passage');
                 break;
@@ -359,9 +370,9 @@ s.marines = {
                 break;
             case 3:
                 switch(roll(1)) {
-                    case 1: this.addSkill('Vehicle'); break;
+                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
                     case 2: this.addSkill('Mechanical'); break;
-                    case 3: this.addSkill('Electronic'); break;
+                    case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Tactics'); break;
                     case 5: this.addSkill(cascadeBlade(this.skills)); break;
                     default: this.addSkill(cascadeGun(this.skills));
@@ -460,7 +471,7 @@ s.army = {
                 break;
             case 5:
                 this.benefits.push('High Passage');
-                break
+                break;
             case 6:
                 this.benefits.push('Middle Passage');
                 break;
@@ -492,9 +503,9 @@ s.army = {
                 break;
             case 3:
                 switch(roll(1)) {
-                    case 1: this.addSkill('Vehicle'); break;
+                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
                     case 2: this.addSkill('Mechanical'); break;
-                    case 3: this.addSkill('Electronic'); break;
+                    case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Tactics'); break;
                     case 5: this.addSkill(cascadeBlade(this.skills)); break;
                     default: this.addSkill(cascadeGun(this.skills));
@@ -569,7 +580,7 @@ s.scouts = {
                 break;
             case 5:
                 this.addSkill(cascadeGun(this.skills));
-                break
+                break;
             case 6:
                 if (this.benefits.indexOf('Scout Ship') > -1) {
                     break;
@@ -604,9 +615,9 @@ s.scouts = {
                 break;
             case 3:
                 switch(roll(1)) {
-                    case 1: this.addSkill('Vehicle'); break;
+                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
                     case 2: this.addSkill('Mechanical'); break;
-                    case 3: this.addSkill('Electronic'); break;
+                    case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Jack-o-T'); break;
                     case 5: this.addSkill('Gunnery'); break;
                     default: this.addSkill('Medical');
@@ -679,7 +690,6 @@ s.merchants = {
             this.addSkill('Pilot');
         }
     },
-    doPromotion: function() { return; },
     musterCash: {
         1: 1000,
         2: 5000,
@@ -705,7 +715,7 @@ s.merchants = {
                 break;
             case 5:
                 this.addSkill(cascadeBlade(this.skills));
-                break
+                break;
             case 6:
                 this.benefits.push('Low Passage');
                 break;
@@ -727,7 +737,7 @@ s.merchants = {
                 break;
             case 2:
                 switch(roll(1)) {
-                    case 1: this.addSkill('Vehicle'); break;
+                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
                     case 2: this.addSkill('Vacc Suit'); break;
                     case 3: this.addSkill('Jack-o-T'); break;
                     case 4: this.addSkill('Steward'); break;
@@ -739,7 +749,7 @@ s.merchants = {
                 switch(roll(1)) {
                     case 1: this.addSkill('Streetwise'); break;
                     case 2: this.addSkill('Mechianical'); break;
-                    case 3: this.addSkill('Electronic'); break;
+                    case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Navigation'); break;
                     case 5: this.addSkill('Gunnery'); break;
                     default: this.addSkill('Medical');
@@ -809,6 +819,7 @@ s.other = {
                 break;
             case 4:
                 this.addSkill(cascadeGun(this.skills));
+                break;
             case 5:
                 this.benefits.push('High Passage');
                 break;
@@ -830,7 +841,7 @@ s.other = {
                 break;
             case 2:
                 switch(roll(1)) {
-                    case 1: this.addSkill('Vehicle'); break;
+                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
                     case 2: this.addSkill('Gambling'); break;
                     case 3: this.addSkill('Brawling'); break;
                     case 4: this.addSkill('Bribery'); break;
@@ -842,7 +853,7 @@ s.other = {
                 switch(roll(1)) {
                     case 1: this.addSkill('Streetwise'); break;
                     case 2: this.addSkill('Mechianical'); break;
-                    case 3: this.addSkill('Electronic'); break;
+                    case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Gambling'); break;
                     case 5: this.addSkill('Brawling'); break;
                     default: this.addSkill('Forgery');
@@ -886,12 +897,12 @@ t.attributes = {
     social: roll(2),
 };
 t.getAttrString = function () {
-    return decToHex(t.attributes.strength)
-        + decToHex(t.attributes.dexterity)
-        + decToHex(t.attributes.endurance)
-        + decToHex(t.attributes.intelligence)
-        + decToHex(t.attributes.education)
-        + decToHex(t.attributes.social);
+    return decToHex(t.attributes.strength) +
+          decToHex(t.attributes.dexterity) +
+          decToHex(t.attributes.endurance) +
+          decToHex(t.attributes.intelligence) +
+          decToHex(t.attributes.education) +
+          decToHex(t.attributes.social);
 };
 t.skillPoints = 1;
 t.skills = [];
@@ -903,10 +914,10 @@ t.checkSkill = function (skill) {
         }
     }
     return skillKnown;
-}
+};
 t.addSkill = function (skill, skillLevel) {
     if (! skillLevel) {
-        var skillLevel = 1;
+        skillLevel = 1;
     }
     if (t.checkSkill(skill)) {
         for (var i = 0, limit = t.skills.length; i < limit; i++) {
@@ -938,11 +949,12 @@ t.service = function() {
         }
     }
     // Attempt to enlist
-    t.history.push('Attempted to enlist in '
-        + s[preferredService].serviceName + '.');
+    t.history.push('Attempted to enlist in ' +
+        s[preferredService].serviceName + '.');
+    var serviceSkills = [];
     if ((roll(2) + preferredServiceDM) >= s[preferredService].enlistmentThrow) {
         t.history.push('Enlistment accepted.');
-        var serviceSkills = s[preferredService].getServiceSkills();
+        serviceSkills = s[preferredService].getServiceSkills();
         for (var i = 0, limit = serviceSkills.length; i < limit; i++) {
             t.addSkill(serviceSkills[i]);
         }
@@ -950,8 +962,8 @@ t.service = function() {
     } else {
         t.history.push('Enlistment denied.');
         var draftService = s.draft();
-        t.history.push('Drafted into ' + draftService + '.')
-        var serviceSkills = s[draftService].getServiceSkills();
+        t.history.push('Drafted into ' + draftService + '.');
+        serviceSkills = s[draftService].getServiceSkills();
         for (var i = 0, limit = serviceSkills.length; i < limit; i++) {
             t.addSkill(serviceSkills[i]);
         }
@@ -979,8 +991,8 @@ t.doServiceTerm = function () {
             t.rank += 1;
             t.skillPoints += 1;
             s[t.service].doPromotion.call(t);
-            t.history.push('Commissioned during '
-                + intToOrdinal(t.terms) + ' term of service.');
+            t.history.push('Commissioned during ' +
+                intToOrdinal(t.terms) + ' term of service.');
         }
     }
     // Try for promotion:
@@ -988,11 +1000,10 @@ t.doServiceTerm = function () {
         if (s[t.service].checkPromotion(t.attributes)) {
             t.rank += 1;
             t.skillPoints += 1;
-            t.history.push('Promoted to '
-                + s[t.service].ranks[t.rank] + '.');
+            t.history.push('Promoted to ' + s[t.service].ranks[t.rank] + '.');
         }
     }
-    for (i = 0, limit = t.skillPoints; i < limit; i++) {
+    for (var i = 0, limit = t.skillPoints; i < limit; i++) {
         s[t.service].acquireSkill.call(t);
         t.skillPoints -= 1;
     }
@@ -1022,7 +1033,7 @@ t.musterOut = function () {
         if (i <= 3) {
             t.credits += s[t.service].musterCash[roll(1) + benefitsDM];
         } else {
-            s[t.service].musterBenefits.call(t, benefitsDM)
+            s[t.service].musterBenefits.call(t, benefitsDM);
         }
     }
     // Figure annual retirement pay:
@@ -1046,38 +1057,37 @@ t.musterOut = function () {
             default:
                 t.retirementPay = ((t.terms - 9) * 2000) + 12000;
         }
-        t.benefits.push(numCommaSep(t.retirementPay)
-            + '/yr Retirement Pay');
+        t.benefits.push(numCommaSep(t.retirementPay) + '/yr Retirement Pay');
     }
 };
 t.doReenlistment = function () {
     var reenlistRoll = roll(2);
     if (reenlistRoll == 12) {
-        t.history.push('Manditory reenlistment for '
-            + intToOrdinal(t.terms + 1) + ' term.');
+        t.history.push('Manditory reenlistment for ' +
+            intToOrdinal(t.terms + 1) + ' term.');
     } else if (t.terms >= 7) {
         t.activeDuty = false;
-        t.history.push('Mandatory retirement after '
-            + intToOrdinal(t.terms) + ' term.');
+        t.history.push('Mandatory retirement after ' +
+            intToOrdinal(t.terms) + ' term.');
     } else if (reenlistRoll < s[t.service].reenlistThrow) {
         t.activeDuty = false;
-        t.history.push('Denied reenlistment after '
-            + intToOrdinal(t.terms) + ' term.');
+        t.history.push('Denied reenlistment after ' +
+            intToOrdinal(t.terms) + ' term.');
     } else if (reenlistRoll >= s[t.service].reenlistThrow) {
         if (roll(2) >= 10) {
             if (t.terms < 5) {
                 t.activeDuty = false;
-                t.history.push('Chose not to reenlist after ' 
-                    + intToOrdinal(t.terms) + ' term.');
+                t.history.push('Chose not to reenlist after ' +
+                    intToOrdinal(t.terms) + ' term.');
             } else {
                 t.activeDuty = false;
                 t.retired = true;
-                t.history.push('Retired after ' 
-                    + intToOrdinal(t.terms) + ' term.');
+                t.history.push('Retired after ' +
+                    intToOrdinal(t.terms) + ' term.');
             }
         } else {
-            t.history.push('Voluntarily reenlisted for '
-                + intToOrdinal(t.terms + 1) + ' term.');
+            t.history.push('Voluntarily reenlisted for ' +
+                intToOrdinal(t.terms + 1) + ' term.');
         }
     }
 };
@@ -1086,18 +1096,18 @@ t.doAging = function () {
     if (t.age < 34) {
         return;
     } else if (t.age <= 46) {
-        if (roll(2) <= 8) { t.attributes['strength'] -= 1; }
-        if (roll(2) <= 7) { t.attributes['dexterity'] -= 1; }
-        if (roll(2) <= 8) { t.attributes['endurance'] -= 1; }
+        if (roll(2) <= 8) { t.attributes.strength -= 1; }
+        if (roll(2) <= 7) { t.attributes.dexterity -= 1; }
+        if (roll(2) <= 8) { t.attributes.endurance -= 1; }
     } else if (t.age <= 62) {
-        if (roll(2) <= 9) { t.attributes['strength'] -= 1; }
-        if (roll(2) <= 8) { t.attributes['dexterity'] -= 1; }
-        if (roll(2) <= 9) { t.attributes['endurance'] -= 1; }
+        if (roll(2) <= 9) { t.attributes.strength -= 1; }
+        if (roll(2) <= 8) { t.attributes.dexterity -= 1; }
+        if (roll(2) <= 9) { t.attributes.endurance -= 1; }
     } else {
-        if (roll(2) <= 9) { t.attributes['strength'] -= 1; }
-        if (roll(2) <= 9) { t.attributes['dexterity'] -= 1; }
-        if (roll(2) <= 9) { t.attributes['endurance'] -= 1; }
-        if (roll(2) <= 9) { t.attributes['intelligence'] -= 1; }
+        if (roll(2) <= 9) { t.attributes.strength -= 1; }
+        if (roll(2) <= 9) { t.attributes.dexterity -= 1; }
+        if (roll(2) <= 9) { t.attributes.endurance -= 1; }
+        if (roll(2) <= 9) { t.attributes.intelligence -= 1; }
     }
     // Aging crisis?
     for (var a in t.attributes) {
@@ -1159,51 +1169,58 @@ t.toString = function () {
             } else {
                 return '';
             }
-        }).call(this)
-        + (function () {
+        }).call(this) +
+        (function () {
             if (this.service == 'other') { return ''; }
             return s[this.service].memberName + ' ';
-        }).call(this)
-        + (function () {
-            if (s[this.service].ranks[this.rank] != '') {
+        }).call(this) +
+        (function () {
+            if (s[this.service].ranks[this.rank] !== '') {
                 return s[this.service].ranks[this.rank] + ' ';
             } else {
                 return '';
             }
-        }).call(this)
-        + (function () {
+        }).call(this) +
+        (function () {
             if (this.attributes.social > 10) {
                 return this.getNobleTitle() + ' ';
             } else {
                 return '';
             }
-        }).call(this)
-        + this.name
-        + '    ' + this.getAttrString() + '    Age '
-        + this.age + "\n" 
-        + (function () {
+        }).call(this) +
+        this.name +
+        '    ' + this.getAttrString() + '    Age ' + this.age + "\n" +
+        (function () {
             if (this.terms == 1) {
                 return this.terms + ' term';
             } else {
                 return this.terms + ' terms';
             }
-        }).call(this)
-        + (function () {
+        }).call(this) +
+        (function () {
             if (! this.deceased) {
-                return "\t\t\t\tCr" + numCommaSep(this.credits);
+                return "                        Cr" + numCommaSep(this.credits);
             } else {
                 return '';
             }
-        }).call(this)
-        + "\n\n"
-        + (function () {
-            var history = "Service History:\n";
-            for (var i = 0, limit = this.history.length; i < limit; i++) {
-                history = history + this.history[i] + "\n";
+        }).call(this) + "\n" +
+        (function () {
+            if ((t.skills.length < 1) || (t.deceased)) { return ''; }
+            var skills = [];
+            for (var i = 0, limit = t.skills.length; i < limit; i++) {
+                skills.push(t.skills[i][0] + '-' + t.skills[i][1]);
             }
-            return history;
-        }).call(this)
-        + (function () {
+            skills.sort();
+            var skillString = "\nSkills: ";
+            for (var i = 0, limit = skills.length; i < limit; i++) {
+                skillString += skills[i];
+                if (i !== limit - 1) {
+                    skillString += ', ';
+                }
+            }
+            return skillString + "\n";
+        }).call(this) +
+        (function () {
             if (this.benefits.length > 0) {
                 this.benefits.sort();
                 var benefits = "\nBenefits: ";
@@ -1215,24 +1232,16 @@ t.toString = function () {
                     }
                 }
                 return benefits;
-            } else { return '' }
+            } else { return ''; }
+        }).call(this) +
+        (function () {
+            var history = "Service History:\n";
+            for (var i = 0, limit = this.history.length; i < limit; i++) {
+                history = history + this.history[i] + "\n";
+            }
+            return "\n" + history;
         }).call(this)
-        + (function () {
-            if ((t.skills.length < 1) || (t.deceased)) { return ''; }
-            var skills = [];
-            for (var i = 0, limit = t.skills.length; i < limit; i++) {
-                skills.push(t.skills[i][0] + '-' + t.skills[i][1]);
-            }
-            skills.sort();
-            var skillString = "\nSkills: ";
-            for (var i = 0, limit = skills.length; i < limit; i++) {
-                skillString += skills[i];
-                if (i !== limit - 1) {
-                    skillString += ', '
-                }
-            }
-            return skillString;
-        }).call(this);
+    ;
 };
 
 while (t.activeDuty && (! t.deceased)) {
@@ -1251,4 +1260,4 @@ return t.toString();
 
 } // End wrapper function travellerCharacterGenerator()
 
-travellerCharacterGenerator('text');
+travellerCharacter('text');
