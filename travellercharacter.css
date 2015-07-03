@@ -7,7 +7,7 @@
         background: red;
         border: 0;
         height: 1px;
-        margin: 1em 0 1.5em 0;
+        margin: 1em 0em 1.5em -10em;
     }
 }
 @media print {
