@@ -3,11 +3,20 @@
         background: #000;
         color: #fff;
     }
+    hr {
+        background: red;
+        border: 0;
+        height: 1px;
+        margin: 1em 0 1.5em 0;
+    }
 }
 @media print {
     body {
         background: #fff;
         color: #000;
+    }
+    hr {
+        display: none;
     }
     #noprintheader {
         display: none;
