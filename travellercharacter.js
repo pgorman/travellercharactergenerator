@@ -69,26 +69,35 @@ function generateName(gender) {
     return arnd(given) + ' ' + arnd(family);
 }
 
-function amatch(a1, a2) {
-    // Return first element in array a1 also present in array a2.
-    for (var i = 0, limit = a1.length; i < limit; i++) {
-        if (a2.indexOf(a1[i]) > -1) {
-            return ai[i];
-        } else {
-            return false;
+//------------------------ Cascade Skills ------------------------//
+cascadeBlade = function (skills) {
+    // Call like cascadeBlade(t.skills)
+    var blades = ['Dagger', 'Foil', 'Sword', 'Cutlass', 'Broadsword', 'Bayonet', 'Spear', 'Halberd', 'Pike', 'Cudgel'];
+    var knownBlades = [];
+    for (var i = 0, limit = skills.length; i < limit; i++) {
+        if (blades.indexOf(skills[i][0]) > -1) {
+            knownBlades.push(skills[i][0]);
         }
     }
+    if (knownBlades.length > 0) {
+        return arnd(knownBlades);
+    } else {
+        return arnd(blades);
+    }
 }
-
-//-------- "skill" holds service-independent skill definitions --------//
-var skills = {};
-skills.getBlade = function () {
-    var blades = ['Dagger', 'Foil', 'Sword', 'Cutlass', 'Broadsword', 'Bayonet', 'Spear', 'Halberd', 'Pike', 'Cudgel'];
-    // Call with skills.getBlade.call(t)
-    if (this.service == 'marine') {
-        return 'Cutlass';
-    } else if (amatch()) {
-////////////////////////////////////-----------------------------------
+cascadeGun = function (skills) {
+    // Call like cascadeBlade(t.skills)
+    var guns = ['Body Pistol', 'Auto Pistol', 'Revolver', 'Carbine', 'Rifle', 'Auto Rifle', 'Shotgun', 'SMG', 'Laser Carbine', 'Laser Rifle'];
+    var knownGuns = [];
+    for (var i = 0, limit = skills.length; i < limit; i++) {
+        if (guns.indexOf(skills[i][0]) > -1) {
+            knownGuns.push(skills[i][0]);
+        }
+    }
+    if (knownGuns.length > 0) {
+        return arnd(knownGuns);
+    } else {
+        return arnd(guns);
     }
 }
 
@@ -174,7 +183,7 @@ s.navy = {
                 this.attributes.education += 1;
                 break;
             case 4:
-                this.addSkill('Blade');
+                this.addSkill(cascadeBlade(this.skills));
                 break;
             case 5:
                 if (this.benefits.indexOf("Travellers' Aide Society") > -1) {
@@ -208,8 +217,8 @@ s.navy = {
                     case 2: this.addSkill('Vacc Suit'); break;
                     case 3: this.addSkill('Fwd Obsvr'); break;
                     case 4: this.addSkill('Gunnery'); break;
-                    case 5: this.addSkill('Blade'); break;
-                    default: this.addSkill('Gun');
+                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
+                    default: this.addSkill(cascadeGun(this.skills));
                 }
                 break;
             case 3:
@@ -311,7 +320,7 @@ s.marines = {
                 this.attributes.education += 1;
                 break;
             case 4:
-                this.addSkill('Blade');
+                this.addSkill(cascadeBlade(this.skills));
                 break;
             case 5:
                 if (this.benefits.indexOf("Travellers' Aide Society") > -1) {
@@ -335,17 +344,17 @@ s.marines = {
                     case 3: this.attributes.endurance += 1; break;
                     case 4: this.addSkill('Gambling'); break;
                     case 5: this.addSkill('Brawling'); break;
-                    default: this.addSkill('Blade Cbt');
+                    default: this.addSkill(cascadeBlade(this.skills));
                 }
                 break;
             case 2:
                 switch(roll(1)) {
                     case 1: this.addSkill('ATV'); break;
                     case 2: this.addSkill('Vacc Suit'); break;
-                    case 3: this.addSkill('Blade Cbt'); break;
-                    case 4: this.addSkill('Gun Cbt'); break;
-                    case 5: this.addSkill('Blade Cbt'); break;
-                    default: this.addSkill('Gun Cbt');
+                    case 3: this.addSkill(cascadeBlade(this.skills)); break;
+                    case 4: this.addSkill(cascadeGun(this.skills)); break;
+                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
+                    default: this.addSkill(cascadeGun(this.skills));
                 }
                 break;
             case 3:
@@ -354,8 +363,8 @@ s.marines = {
                     case 2: this.addSkill('Mechanical'); break;
                     case 3: this.addSkill('Electronic'); break;
                     case 4: this.addSkill('Tactics'); break;
-                    case 5: this.addSkill('Blade Cbt'); break;
-                    default: this.addSkill('Gun Cbt');
+                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
+                    default: this.addSkill(cascadeGun(this.skills));
                 }
                 break;
             case 4:
@@ -447,7 +456,7 @@ s.army = {
                 this.attributes.education += 1;
                 break;
             case 4:
-                this.addSkill('Gun');
+                this.addSkill(cascadeGun(this.skills));
                 break;
             case 5:
                 this.benefits.push('High Passage');
@@ -475,10 +484,10 @@ s.army = {
                 switch(roll(1)) {
                     case 1: this.addSkill('ATV'); break;
                     case 2: this.addSkill('Air/Raft'); break;
-                    case 3: this.addSkill('Gun Cbt'); break;
+                    case 3: this.addSkill(cascadeGun(this.skills)); break;
                     case 4: this.addSkill('Fwd Obsvr'); break;
-                    case 5: this.addSkill('Blade Cbt'); break;
-                    default: this.addSkill('Gun Cbt');
+                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
+                    default: this.addSkill(cascadeGun(this.skills));
                 }
                 break;
             case 3:
@@ -487,8 +496,8 @@ s.army = {
                     case 2: this.addSkill('Mechanical'); break;
                     case 3: this.addSkill('Electronic'); break;
                     case 4: this.addSkill('Tactics'); break;
-                    case 5: this.addSkill('Blade Cbt'); break;
-                    default: this.addSkill('Gun Cbt');
+                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
+                    default: this.addSkill(cascadeGun(this.skills));
                 }
                 break;
             case 4:
@@ -556,10 +565,10 @@ s.scouts = {
                 this.attributes.education += 2;
                 break;
             case 4:
-                this.addSkill('Blade');
+                this.addSkill(cascadeBlade(this.skills));
                 break;
             case 5:
-                this.addSkill('Gun');
+                this.addSkill(cascadeGun(this.skills));
                 break
             case 6:
                 if (this.benefits.indexOf('Scout Ship') > -1) {
@@ -580,7 +589,7 @@ s.scouts = {
                     case 3: this.attributes.endurance += 1; break;
                     case 4: this.attributes.intelligence += 1; break;
                     case 5: this.attributes.education += 1; break;
-                    default: this.addSkill('Gun Cbt');
+                    default: this.addSkill(cascadeGun(this.skills));
                 }
                 break;
             case 2:
@@ -692,10 +701,10 @@ s.merchants = {
                 this.attributes.education += 1;
                 break;
             case 4:
-                this.addSkill('Gun');
+                this.addSkill(cascadeGun(this.skills));
                 break;
             case 5:
-                this.addSkill('Blade');
+                this.addSkill(cascadeBlade(this.skills));
                 break
             case 6:
                 this.benefits.push('Low Passage');
@@ -712,7 +721,7 @@ s.merchants = {
                     case 2: this.attributes.dexterity += 1; break;
                     case 3: this.attributes.endurance += 1; break;
                     case 4: this.attributes.strength += 1; break;
-                    case 5: this.addSkill('Blade Cbt'); break;
+                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
                     default: this.addSkill('Bribery');
                 }
                 break;
@@ -723,7 +732,7 @@ s.merchants = {
                     case 3: this.addSkill('Jack-o-T'); break;
                     case 4: this.addSkill('Steward'); break;
                     case 5: this.addSkill('Electronics'); break;
-                    default: this.addSkill('Gun Cbt');
+                    default: this.addSkill(cascadeGun(this.skills));
                 }
                 break;
             case 3:
@@ -799,7 +808,7 @@ s.other = {
                 this.attributes.education += 1;
                 break;
             case 4:
-                this.addSkill('Gun');
+                this.addSkill(cascadeGun(this.skills));
             case 5:
                 this.benefits.push('High Passage');
                 break;
@@ -814,7 +823,7 @@ s.other = {
                     case 1: this.attributes.strength += 1; break;
                     case 2: this.attributes.dexterity += 1; break;
                     case 3: this.attributes.endurance += 1; break;
-                    case 4: this.addSkill('Blade Cbt'); break;
+                    case 4: this.addSkill(cascadeBlade(this.skills)); break;
                     case 5: this.addSkill('Brawling'); break;
                     default: this.attributes.social -= 1;
                 }
@@ -825,8 +834,8 @@ s.other = {
                     case 2: this.addSkill('Gambling'); break;
                     case 3: this.addSkill('Brawling'); break;
                     case 4: this.addSkill('Bribery'); break;
-                    case 5: this.addSkill('Blade Cbt'); break;
-                    default: this.addSkill('Gun Cbt');
+                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
+                    default: this.addSkill(cascadeGun(this.skills));
                 }
                 break;
             case 3:
