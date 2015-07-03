@@ -1,3 +1,7 @@
+// Classic Traveller RPG character generator
+// Paul Gorman 2015
+// http://devilghost.com/software/travellercharacter/
+
 function travellerCharacter(output) {
 // output is 'text', 'html', or 'JSON'.
 
@@ -1259,5 +1263,3 @@ console.log(t.toString());
 return t.toString();
 
 } // End wrapper function travellerCharacterGenerator()
-
-travellerCharacter('text');
