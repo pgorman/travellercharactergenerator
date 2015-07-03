@@ -10,7 +10,7 @@ Yes, characters _can_ die during character creation!
 
 ## License ##
 
-Copyright © 2015, Paul Gorman
+Copyright © 2015, Paul Gorman  
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
