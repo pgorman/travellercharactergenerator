@@ -212,7 +212,7 @@ s.navy = {
                 this.improveAttribute('education', 1);
                 break;
             case 4:
-                this.addSkill(cascadeBlade(this.skills));
+            	this.doBladeBenefit.call(t);
                 break;
             case 5:
                 if (this.benefits.indexOf("Travellers' Aide Society") > -1) {
@@ -355,7 +355,7 @@ s.marines = {
                 this.improveAttribute('education', 1);
                 break;
             case 4:
-                this.addSkill(cascadeBlade(this.skills));
+            	this.doBladeBenefit.call(t);
                 break;
             case 5:
                 if (this.benefits.indexOf("Travellers' Aide Society") > -1) {
@@ -497,7 +497,7 @@ s.army = {
                 this.improveAttribute('education', 1);
                 break;
             case 4:
-                this.addSkill(cascadeGun(this.skills));
+            	this.doGunBenefit.call(t);
                 break;
             case 5:
                 this.addBenefit.call(t, 'High Passage');
@@ -608,10 +608,10 @@ s.scouts = {
                 this.improveAttribute('education', 2);
                 break;
             case 4:
-                this.addSkill(cascadeBlade(this.skills));
+            	this.doBladeBenefit.call(t);
                 break;
             case 5:
-                this.addSkill(cascadeGun(this.skills));
+            	this.doGunBenefit.call(t);
                 break;
             case 6:
                 if (this.benefits.indexOf('Scout Ship') > -1) {
@@ -749,10 +749,10 @@ s.merchants = {
                 this.improveAttribute('education', 1);
                 break;
             case 4:
-                this.addSkill(cascadeGun(this.skills));
+            	this.doGunBenefit.call(t);
                 break;
             case 5:
-                this.addSkill(cascadeBlade(this.skills));
+            	this.doBladeBenefit.call(t);
                 break;
             case 6:
                 this.addBenefit.call(t, 'Low Passage');
@@ -858,7 +858,7 @@ s.other = {
                 this.improveAttribute('education', 1);
                 break;
             case 4:
-                this.addSkill(cascadeGun(this.skills));
+            	this.doGunBenefit.call(t);
                 break;
             case 5:
                 this.addBenefit.call(t, 'High Passage');
@@ -935,6 +935,24 @@ t.terms = 0;
 t.credits = 0;
 t.history = [];
 t.benefits = [];
+t.bladeBenefit = '';
+t.gunBenefit = '';
+t.doBladeBenefit = function () {
+    if (t.bladeBenefit == '') {
+        t.bladeBenefit = cascadeBlade(t.skills);
+        t.addBenefit(t.bladeBenefit);
+    } else {
+        t.addSkill(t.bladeBenefit);
+    }
+}
+t.doGunBenefit = function () {
+    if (t.gunBenefit == '') {
+        t.gunBenefit = cascadeGun(t.skills);
+        t.addBenefit(t.gunBenefit);
+    } else {
+        t.addSkill(t.gunBenefit);
+    }
+}
 t.attributes = {
     strength: roll(2),
     dexterity: roll(2),
