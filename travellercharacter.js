@@ -1127,7 +1127,7 @@ t.musterOut = function () {
         }
     }
     // Figure annual retirement pay:
-    if (t.terms >= 5) {
+    if (t.terms >= 5 && t.service !== 'scouts' && t.service !== 'other') {
         switch(t.terms) {
             case 5:
                 t.retirementPay = 4000;
