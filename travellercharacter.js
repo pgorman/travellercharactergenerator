@@ -951,7 +951,7 @@ t.getAttrString = function () {
           decToHex(t.attributes.education) +
           decToHex(t.attributes.social);
 };
-t.skillPoints = 1;
+t.skillPoints = 0;
 t.skills = [];
 t.checkSkill = function (skill) {
     var skillKnown = false;
@@ -1060,6 +1060,8 @@ t.doServiceTerm = function () {
         t.terms + ' age ' + t.age);
     if (t.service == 'scouts') {
         t.skillPoints += 2;
+    } else if (t.terms == 1) {
+    	t.skillPoints += 1;
     } else {
         t.skillPoints += 1;
     }
