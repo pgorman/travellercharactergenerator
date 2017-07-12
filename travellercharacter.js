@@ -699,7 +699,7 @@ s.merchants = {
         3: '2nd Officer',
         4: '1st Officer',
         5: 'Captain',
-        6: 'Captain'
+        6: 'Senior Captain'
     },
     checkPromotion: function() {
         var dm = 0;
@@ -724,7 +724,7 @@ s.merchants = {
         }
     },
     doPromotion: function() {
-        if (this.rank == 1) {
+        if (this.rank == 4) {
             this.addSkill('Pilot');
         }
     },
