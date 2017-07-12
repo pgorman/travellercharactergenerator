@@ -996,6 +996,7 @@ t.verboseHistory = function(text) {
        t.history.push(text);
     }
 }
+t.drafted = false;
 t.service = function() {
     if (t.urlParam('history') == 'verbose') {
         t.showHistory = 'verbose';
@@ -1036,6 +1037,7 @@ t.service = function() {
         }
         return preferredService;
     } else {
+        t.drafted = true;
         t.history.push('Enlistment denied.');
         var draftService = s.draft();
         t.history.push('Drafted into ' + draftService + '.');
@@ -1066,7 +1068,9 @@ t.doServiceTerm = function () {
         t.skillPoints += 1;
     }
     // Check commission:
-    if (! t.commissioned) {
+    if (t.drafted && t.terms == 1) {
+    	t.verboseHistory('Skipping commision because of draft.');
+    } else if (! t.commissioned) {
         if (s[t.service].checkCommission.call(t)) {
             t.commissioned = true;
             t.rank += 1;
