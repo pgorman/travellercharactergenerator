@@ -1115,11 +1115,11 @@ t.musterOut = function () {
         musterRolls += 3;
     }
     if (t.checkSkill('Gambling')) {
-        benefitsDM += 1;
+        cashDM += 1;
     }
-    for (var i = 0, limit = musterRolls; i <= limit; i++) {
+    for (var i = 1, limit = musterRolls; i <= limit; i++) {
         if (i <= 3) {
-            var cash = s[t.service].musterCash[roll(1) + benefitsDM]
+            var cash = s[t.service].musterCash[roll(1) + cashDM]
             t.credits += cash;
             t.verboseHistory(cash + ' credits');
         } else {
