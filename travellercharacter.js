@@ -5,11 +5,24 @@
 // Additional Contributors
 // Frank Filz
 //
-// URL Parameters
-// ?history=
+// URL Parameters ?param=value&param=value
+//
+// history=
 //     verbose - show all the rolls
 //     none    - don't show the history at all
 //     any other value results in a simplified history
+//
+// service=
+//     specify a preferred service instead of random
+//
+// minscore=
+//     specify the minimum score for the preferred service (applies to the
+//     random service if a preferred service is not specified). A minscore
+//     of 9999 overrides the enlistment roll. A minscore of 8888 overrides
+//     the draft with the preferred service (the character is still treated
+//     as having been drafted, but the preferred service is chosen). These
+//     special values allow generating characters that are a specific
+//     service.
 function travellerCharacter(output) {
 // output is 'text', 'html', or 'JSON'.
 
@@ -1010,7 +1023,12 @@ t.addBenefit = function (benefit) {
     t.verboseHistory(benefit);
 }
 t.verboseHistory = function(text) {
-    if (t.showHistory == 'verbose') {
+    if (t.showHistory == 'verbose' || t.showHistory == 'debug') {
+       t.history.push(text);
+    }
+}
+t.debugHistory = function(text) {
+    if (t.showHistory == 'debug') {
        t.history.push(text);
     }
 }
@@ -1018,31 +1036,72 @@ t.drafted = false;
 t.service = function() {
     if (t.urlParam('history') == 'verbose') {
         t.showHistory = 'verbose';
+    } else if (t.urlParam('history') == 'debug') {
+        t.showHistory = 'debug';
     } else if (t.urlParam('history') == 'none') {
         t.showHistory = 'none';
     }
     t.verboseHistory('Rolled attributes: ' + t.getAttrString());
     // In which service should we try to enlist?
-    var preferredService = arnd(s.services);
-    var preferredServiceDM = 1;
+    var preferredService;
+    var preferredServiceScore;
     var thisService;
-    var thisServiceDM;
+    var thisServiceScore;
+    var minscore = +t.urlParam('minscore');
+    if (minscore == 0) {
+        minscore = 1;
+    }
+    if (t.urlParam('service') !== '') {
+        // preferred service is given in the URL
+        preferredService = t.urlParam('service');
+    } else {
+        // Initially pick a random service
+        preferredService = arnd(s.services);
+    }
+
+    // Compute the initial service pick's DM, if it's less than minscore,
+    // bump it to minscore to favor the chosen service.
+    preferredServiceScore = s[preferredService].enlistmentDM(t.attributes);
+    if (preferredServiceScore < minscore) {
+    	preferredServiceScore = minscore;
+    }
+
+    t.debugHistory('Starting with ' + s[preferredService].serviceName +
+                   ' score ' + preferredServiceScore);
     for (var i = 0, limit = s.services.length; i < limit; i++) {
         thisService = s.services[i];
-        thisServiceDM = s[thisService].enlistmentDM(t.attributes);
-        if (thisServiceDM > preferredServiceDM) {
+        thisServiceScore = s[thisService].enlistmentDM(t.attributes);
+        if (thisServiceScore > preferredServiceScore) {
+            t.debugHistory('Switching to ' +
+                           s[thisService].serviceName + ' because score ' +
+                           thisServiceScore + ' > ' + preferredServiceScore);
             preferredService = thisService;
-            preferredServiceDM = thisServiceDM;
-        } else if (thisServiceDM == preferredServiceDM) {
+            preferredServiceScore = thisServiceScore;
+        } else if (thisServiceScore == preferredServiceScore) {
             if (roll(2) > 7) {
+                t.debugHistory('Switching to ' +
+                               s[thisService].serviceName + ' because score ' +
+                               thisServiceScore + ' == ' +
+                               preferredServiceScore);
                 preferredService = thisService;
-                preferredServiceDM = thisServiceDM;
+                preferredServiceScore = thisServiceScore;
             }
         }
     }
+    // Now we need to make sure we use the correct service DM
+    preferredServiceDM = s[preferredService].enlistmentDM(t.attributes);
     // Attempt to enlist
     var serviceSkills = [];
     var en = roll(2);
+    if (minscore == 9999) {
+        t.history.push('Automatic enlistment in ' +
+            s[preferredService].serviceName);
+        serviceSkills = s[preferredService].getServiceSkills();
+        for (var i = 0, limit = serviceSkills.length; i < limit; i++) {
+            t.addSkill(serviceSkills[i]);
+        }
+        return preferredService;
+    }
     t.history.push('Attempted to enlist in ' +
         s[preferredService].serviceName + ', roll ' + en +
         ' + ' + preferredServiceDM + ' vs ' +
@@ -1055,9 +1114,14 @@ t.service = function() {
         }
         return preferredService;
     } else {
+        var draftService;
         t.drafted = true;
         t.history.push('Enlistment denied.');
-        var draftService = s.draft();
+        if (minscore == 8888) {
+            draftService = preferredService;
+        } else {
+            draftService = s.draft();
+        }
         t.history.push('Drafted into ' + draftService + '.');
         serviceSkills = s[draftService].getServiceSkills();
         for (var i = 0, limit = serviceSkills.length; i < limit; i++) {
