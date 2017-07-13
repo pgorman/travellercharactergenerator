@@ -1167,6 +1167,7 @@ t.doServiceTerm = function () {
         if (s[t.service].checkPromotion.call(t)) {
             t.rank += 1;
             t.skillPoints += 1;
+            s[t.service].doPromotion.call(t);
             t.history.push('Promoted to ' + s[t.service].ranks[t.rank] + '.');
         }
     }
