@@ -1268,7 +1268,7 @@ t.doReenlistment = function () {
 t.ageAttribute = function(attrib, req) {
     var agingRoll = roll(2);
     t.verboseHistory('Aging ' + attrib + ' throw ' + agingRoll + ' vs ' + req);
-    if (agingRoll <= req) { t.improveAttribute(attrib, -1); }
+    if (agingRoll < req) { t.improveAttribute(attrib, -1); }
 }
 t.doAging = function () {
     // Age-related attribute loss?
