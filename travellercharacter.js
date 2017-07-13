@@ -1144,7 +1144,7 @@ t.doServiceTerm = function () {
     if (t.service == 'scouts') {
         t.skillPoints += 2;
     } else if (t.terms == 1) {
-    	t.skillPoints += 1;
+    	t.skillPoints += 2;
     } else {
         t.skillPoints += 1;
     }
