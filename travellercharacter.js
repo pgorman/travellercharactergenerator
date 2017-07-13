@@ -1102,10 +1102,8 @@ t.service = function() {
         }
         return preferredService;
     }
-    t.history.push('Attempted to enlist in ' +
-        s[preferredService].serviceName + ', roll ' + en +
-        ' + ' + preferredServiceDM + ' vs ' +
-        s[preferredService].enlistmentThrow);
+	t.history.push('Attempted to enlist in ' + s[preferredService].serviceName + '.');
+	t.verboseHistory('Enlistment roll ' + en + ' + ' + preferredServiceDM + ' vs ' + s[preferredService].enlistmentThrow);
     if ((en + preferredServiceDM) >= s[preferredService].enlistmentThrow) {
         t.history.push('Enlistment accepted.');
         serviceSkills = s[preferredService].getServiceSkills();
