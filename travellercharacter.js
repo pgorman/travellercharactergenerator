@@ -975,13 +975,21 @@ t.attributes = {
     education: roll(2),
     social: roll(2),
 };
+t.extendedHex = function (val) {
+    var xhex = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ'.split('');
+    if (val < 34) {
+        return xhex[val];
+    } else {
+        return '?';
+    }
+}     
 t.getAttrString = function () {
-    return decToHex(t.attributes.strength) +
-          decToHex(t.attributes.dexterity) +
-          decToHex(t.attributes.endurance) +
-          decToHex(t.attributes.intelligence) +
-          decToHex(t.attributes.education) +
-          decToHex(t.attributes.social);
+    return t.extendedHex(t.attributes.strength) +
+          t.extendedHex(t.attributes.dexterity) +
+          t.extendedHex(t.attributes.endurance) +
+          t.extendedHex(t.attributes.intelligence) +
+          t.extendedHex(t.attributes.education) +
+          t.extendedHex(t.attributes.social);
 };
 t.skillPoints = 0;
 t.skills = [];
@@ -1017,7 +1025,7 @@ t.improveAttribute = function (attrib, delta) {
     t.attributes[attrib] += delta;
     t.verboseHistory((delta > 0 ? 'Increased ' : 'Decreased ') +
                  attrib + ' by ' + delta + ' to ' +
-                 t.attributes[attrib]);
+                 t.extendedHex(t.attributes[attrib]));
 }
 t.addBenefit = function (benefit) {
     t.benefits.push(benefit);
