@@ -1,6 +1,7 @@
 // Classic Traveller RPG character generator
 // Paul Gorman 2015
-// http://devilghost.com/software/travellercharacter/
+// https://devilghost.com/software/travellercharacter/
+// https://github.com/pgorman/travellercharactergenerator
 //
 // Additional Contributors
 // Frank Filz
