@@ -1,7 +1,28 @@
 // Classic Traveller RPG character generator
 // Paul Gorman 2015
 // http://devilghost.com/software/travellercharacter/
-
+//
+// Additional Contributors
+// Frank Filz
+//
+// URL Parameters ?param=value&param=value
+//
+// history=
+//     verbose - show all the rolls
+//     none    - don't show the history at all
+//     any other value results in a simplified history
+//
+// service=
+//     specify a preferred service instead of random
+//
+// minscore=
+//     specify the minimum score for the preferred service (applies to the
+//     random service if a preferred service is not specified). A minscore
+//     of 9999 overrides the enlistment roll. A minscore of 8888 overrides
+//     the draft with the preferred service (the character is still treated
+//     as having been drafted, but the preferred service is chosen). These
+//     special values allow generating characters that are a specific
+//     service.
 function travellerCharacter(output) {
 // output is 'text', 'html', or 'JSON'.
 
@@ -135,10 +156,12 @@ s.navy = {
         return dm;
     },
     getServiceSkills: function () { return []; },
-    checkSurvival: function (attributes) {
+    checkSurvival: function () {
         var dm = 0;
-        if (attributes.intelligence >= 7) { dm += 2; }
-        if ((roll(2) + dm) >= 5) {
+        var sv = roll(2);
+        if (this.attributes.intelligence >= 7) { dm += 2; }
+        this.verboseHistory('Survival roll ' + sv + ' + ' + dm + ' vs ' + 5);
+        if ((sv + dm) >= 5) {
             return true;
         } else {
             return false;
@@ -154,19 +177,23 @@ s.navy = {
         5: 'Captain',
         6: 'Admiral'
     },
-    checkPromotion: function (attributes) {
+    checkPromotion: function () {
         var dm = 0;
-        if (attributes.education >= 8) { dm += 1; }
-        if ((roll(2) + dm) >= 8) {
+        var sv = roll(2);
+        if (this.attributes.education >= 8) { dm += 1; }
+        this.verboseHistory('Promotion roll ' + sv + ' + ' + dm + ' vs ' + 8);
+        if ((sv + dm) >= 8) {
             return true;
         } else {
             return false;
         }
     },
-    checkCommission: function(attributes) {
+    checkCommission: function() {
         var dm = 0;
-        if (attributes.social >= 9) { dm += 1; }
-        if ((roll(2) + dm) >= 10) {
+        var sv = roll(2);
+        if (this.attributes.social >= 9) { dm += 1; }
+        this.verboseHistory('Commission roll ' + sv + ' + ' + dm + ' vs ' + 10);
+        if ((sv + dm) >= 10) {
             return true;
         } else {
             return false;
@@ -174,7 +201,7 @@ s.navy = {
     },
     doPromotion: function() {
         if (this.rank == 5 || 6) {
-            this.attributes.social += 1;
+            this.improveAttribute('social', 1);
         }
     },
     musterCash: {
@@ -189,28 +216,28 @@ s.navy = {
     musterBenefits: function (dm) {
         switch(roll(1) + dm) {
             case 1:
-                this.benefits.push('Low Passage');
+                this.addBenefit.call(t, 'Low Passage');
                 break;
             case 2:
-                this.attributes.intelligence += 1;
+                this.improveAttribute('intelligence', 1);
                 break;
             case 3:
-                this.attributes.education += 1;
+                this.improveAttribute('education', 1);
                 break;
             case 4:
-                this.addSkill(cascadeBlade(this.skills));
+            	this.doBladeBenefit.call(t);
                 break;
             case 5:
                 if (this.benefits.indexOf("Travellers' Aide Society") > -1) {
                     break;
                 }
-                this.benefits.push("Travellers' Aid Society");
+                this.addBenefit.call(t, "Travellers' Aid Society");
                 break;
             case 6:
-                this.benefits.push('High Passage');
+                this.addBenefit.call(t, 'High Passage');
                 break;
             default:
-                this.attributes.social += 2;
+                this.improveAttribute('social', 2);
         }
     },
     acquireSkill: function () {
@@ -218,12 +245,12 @@ s.navy = {
         switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
             case 1:
                 switch(roll(1)) {
-                    case 1: this.attributes.strength += 1; break;
-                    case 2: this.attributes.dexterity += 1; break;
-                    case 3: this.attributes.endurance += 1; break;
-                    case 4: this.attributes.intelligence += 1; break;
-                    case 5: this.attributes.education += 1; break;
-                    default: this.attributes.social += 1;
+                    case 1: this.improveAttribute('strength', 1); break;
+                    case 2: this.improveAttribute('dexterity', 1); break;
+                    case 3: this.improveAttribute('endurance', 1); break;
+                    case 4: this.improveAttribute('intelligence', 1); break;
+                    case 5: this.improveAttribute('education', 1); break;
+                    default: this.improveAttribute('social', 1);
                 }
                 break;
             case 2:
@@ -272,10 +299,12 @@ s.marines = {
         return dm;
     },
     getServiceSkills: function () { return ['Cutlass']; },
-    checkSurvival: function (attributes) {
+    checkSurvival: function () {
         var dm = 0;
-        if (attributes.endurance >= 8) { dm += 2; }
-        if ((roll(2) + dm) >= 6) {
+        var sv = roll(2);
+        if (this.attributes.endurance >= 8) { dm += 2; }
+        this.verboseHistory('Survival roll ' + sv + ' + ' + dm + ' vs ' + 6);
+        if ((sv + dm) >= 6) {
             return true;
         } else {
             return false;
@@ -291,19 +320,23 @@ s.marines = {
         5: 'Colonel',
         6: 'Brigadier'
     },
-    checkPromotion: function (attributes) {
+    checkPromotion: function () {
         var dm = 0;
-        if (attributes.social >= 8) { dm += 1; }
-        if ((roll(2) + dm) >= 9) {
+        var sv = roll(2);
+        if (this.attributes.social >= 8) { dm += 1; }
+        this.verboseHistory('Promotion roll ' + sv + ' + ' + dm + ' vs ' + 9);
+        if ((sv + dm) >= 9) {
             return true;
         } else {
             return false;
         }
     },
-    checkCommission: function(attributes) {
+    checkCommission: function() {
         var dm = 0;
-        if (attributes.education >= 7) { dm += 1; }
-        if ((roll(2) + dm) >= 9) {
+        var sv = roll(2);
+        if (this.attributes.education >= 7) { dm += 1; }
+        this.verboseHistory('Commission roll ' + sv + ' + ' + dm + ' vs ' + 9);
+        if ((sv + dm) >= 9) {
             return true;
         } else {
             return false;
@@ -326,37 +359,37 @@ s.marines = {
     musterBenefits: function (dm) {
         switch(roll(1) + dm) {
             case 1:
-                this.benefits.push('Low Passage');
+                this.addBenefit.call(t, 'Low Passage');
                 break;
             case 2:
-                this.attributes.intelligence += 1;
+                this.improveAttribute('intelligence', 1);
                 break;
             case 3:
-                this.attributes.education += 1;
+                this.improveAttribute('education', 1);
                 break;
             case 4:
-                this.addSkill(cascadeBlade(this.skills));
+            	this.doBladeBenefit.call(t);
                 break;
             case 5:
                 if (this.benefits.indexOf("Travellers' Aide Society") > -1) {
                     break;
                 }
-                this.benefits.push("Travellers' Aid Society");
+                this.addBenefit.call(t, "Travellers' Aid Society");
                 break;
             case 6:
-                this.benefits.push('High Passage');
+                this.addBenefit.call(t, 'High Passage');
                 break;
             default:
-                this.attributes.social += 2;
+                this.improveAttribute('social', 2);
         }
     },
     acquireSkill: function () {
         switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
             case 1:
                 switch(roll(1)) {
-                    case 1: this.attributes.strength += 1; break;
-                    case 2: this.attributes.dexterity += 1; break;
-                    case 3: this.attributes.endurance += 1; break;
+                    case 1: this.improveAttribute('strength', 1); break;
+                    case 2: this.improveAttribute('dexterity', 1); break;
+                    case 3: this.improveAttribute('endurance', 1); break;
                     case 4: this.addSkill('Gambling'); break;
                     case 5: this.addSkill('Brawling'); break;
                     default: this.addSkill(cascadeBlade(this.skills));
@@ -408,10 +441,12 @@ s.army = {
         return dm;
     },
     getServiceSkills: function () { return ['Rifle']; },
-    checkSurvival: function (attributes) {
+    checkSurvival: function () {
         var dm = 0;
-        if (attributes.education >= 5) { dm += 2; }
-        if ((roll(2) + dm) >= 5) {
+        var sv = roll(2);
+        if (this.attributes.education >= 5) { dm += 2; }
+        this.verboseHistory('Survival roll ' + sv + ' + ' + dm + ' vs ' + 5);
+        if ((sv + dm) >= 5) {
             return true;
         } else {
             return false;
@@ -427,19 +462,23 @@ s.army = {
         5: 'Colonel',
         6: 'General'
     },
-    checkPromotion: function (attributes) {
+    checkPromotion: function () {
         var dm = 0;
-        if (attributes.education >= 7) { dm += 1; }
-        if ((roll(2) + dm) >= 6) {
+        var sv = roll(2);
+        if (this.attributes.education >= 7) { dm += 1; }
+        this.verboseHistory('Promotion roll ' + sv + ' + ' + dm + ' vs ' + 6);
+        if ((sv + dm) >= 6) {
             return true;
         } else {
             return false;
         }
     },
-    checkCommission: function(attributes) {
+    checkCommission: function() {
         var dm = 0;
-        if (attributes.endurance >= 7) { dm += 1; }
-        if ((roll(2) + dm) >= 5) {
+        var sv = roll(2);
+        if (this.attributes.endurance >= 7) { dm += 1; }
+        this.verboseHistory('Commission roll ' + sv + ' + ' + dm + ' vs ' + 5);
+        if ((sv + dm) >= 5) {
             return true;
         } else {
             return false;
@@ -462,36 +501,36 @@ s.army = {
     musterBenefits: function (dm) {
         switch(roll(1) + dm) {
             case 1:
-                this.benefits.push('Low Passage');
+                this.addBenefit.call(t, 'Low Passage');
                 break;
             case 2:
-                this.attributes.intelligence += 1;
+                this.improveAttribute('intelligence', 1);
                 break;
             case 3:
-                this.attributes.education += 1;
+                this.improveAttribute('education', 1);
                 break;
             case 4:
-                this.addSkill(cascadeGun(this.skills));
+            	this.doGunBenefit.call(t);
                 break;
             case 5:
-                this.benefits.push('High Passage');
+                this.addBenefit.call(t, 'High Passage');
                 break;
             case 6:
-                this.benefits.push('Middle Passage');
+                this.addBenefit.call(t, 'Middle Passage');
                 break;
             default:
-                this.attributes.social += 1;
+                this.improveAttribute('social', 1);
         }
     },
     acquireSkill: function () {
         switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
             case 1:
                 switch(roll(1)) {
-                    case 1: this.attributes.strength += 1; break;
-                    case 2: this.attributes.dexterity += 1; break;
-                    case 3: this.attributes.endurance += 1; break;
+                    case 1: this.improveAttribute('strength', 1); break;
+                    case 2: this.improveAttribute('dexterity', 1); break;
+                    case 3: this.improveAttribute('endurance', 1); break;
                     case 4: this.addSkill('Gambling'); break;
-                    case 5: this.attributes.education += 1; break;
+                    case 5: this.improveAttribute('education', 1); break;
                     default: this.addSkill('Brawling');
                 }
                 break;
@@ -541,10 +580,12 @@ s.scouts = {
         return dm;
     },
     getServiceSkills: function () { return ['Pilot']; },
-    checkSurvival: function (attributes) {
+    checkSurvival: function () {
         var dm = 0;
-        if (attributes.endurance >= 9) { dm += 2; }
-        if ((roll(2) + dm) >= 7) {
+        var sv = roll(2);
+        if (this.attributes.endurance >= 9) { dm += 2; }
+        this.verboseHistory('Survival roll ' + sv + ' + ' + dm + ' vs ' + 7);
+        if ((sv + dm) >= 7) {
             return true;
         } else {
             return false;
@@ -552,10 +593,10 @@ s.scouts = {
     },
     reenlistThrow: 3,
     ranks: { 0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: '' },
-    checkPromotion: function (attributes) {
+    checkPromotion: function () {
         return false;
     },
-    checkCommission: function(attributes) {
+    checkCommission: function() {
         return false;
     },
     doPromotion: function() { return; },
@@ -571,39 +612,39 @@ s.scouts = {
     musterBenefits: function (dm) {
         switch(roll(1) + dm) {
             case 1:
-                this.benefits.push('Low Passage');
+                this.addBenefit.call(t, 'Low Passage');
                 break;
             case 2:
-                this.attributes.intelligence += 2;
+                this.improveAttribute('intelligence', 2);
                 break;
             case 3:
-                this.attributes.education += 2;
+                this.improveAttribute('education', 2);
                 break;
             case 4:
-                this.addSkill(cascadeBlade(this.skills));
+            	this.doBladeBenefit.call(t);
                 break;
             case 5:
-                this.addSkill(cascadeGun(this.skills));
+            	this.doGunBenefit.call(t);
                 break;
             case 6:
                 if (this.benefits.indexOf('Scout Ship') > -1) {
                     break;
                 }
-                this.benefits.push('Scout Ship');
+                this.addBenefit.call(t, 'Scout Ship');
                 break;
             default:
-                this.attributes.social += 1;
+                this.improveAttribute('social', 1);
         }
     },
     acquireSkill: function () {
         switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
             case 1:
                 switch(roll(1)) {
-                    case 1: this.attributes.strength += 1; break;
-                    case 2: this.attributes.dexterity += 1; break;
-                    case 3: this.attributes.endurance += 1; break;
-                    case 4: this.attributes.intelligence += 1; break;
-                    case 5: this.attributes.education += 1; break;
+                    case 1: this.improveAttribute('strength', 1); break;
+                    case 2: this.improveAttribute('dexterity', 1); break;
+                    case 3: this.improveAttribute('endurance', 1); break;
+                    case 4: this.improveAttribute('intelligence', 1); break;
+                    case 5: this.improveAttribute('education', 1); break;
                     default: this.addSkill(cascadeGun(this.skills));
                 }
                 break;
@@ -653,10 +694,12 @@ s.merchants = {
         return dm;
     },
     getServiceSkills: function () { return []; },
-    checkSurvival: function (attributes) {
+    checkSurvival: function () {
         var dm = 0;
-        if (attributes.intelligence >= 7) { dm += 2; }
-        if ((roll(2) + dm) >= 5) {
+        var sv = roll(2);
+        if (this.attributes.intelligence >= 7) { dm += 2; }
+        this.verboseHistory('Survival roll ' + sv + ' + ' + dm + ' vs ' + 5);
+        if ((sv + dm) >= 5) {
             return true;
         } else {
             return false;
@@ -669,28 +712,32 @@ s.merchants = {
         3: '2nd Officer',
         4: '1st Officer',
         5: 'Captain',
-        6: 'Captain'
+        6: 'Senior Captain'
     },
-    checkPromotion: function (attributes) {
+    checkPromotion: function() {
         var dm = 0;
-        if (attributes.intelligence >= 9) { dm += 1; }
-        if ((roll(2) + dm) >= 10) {
+        var sv = roll(2);
+        if (this.attributes.intelligence >= 9) { dm += 1; }
+        this.verboseHistory('Promotion roll ' + sv + ' + ' + dm + ' vs ' + 10);
+        if ((sv + dm) >= 10) {
             return true;
         } else {
             return false;
         }
     },
-    checkCommission: function (attributes) {
+    checkCommission: function() {
         var dm = 0;
-        if (attributes.intelligence >= 6) { dm += 1; }
-        if ((roll(2) + dm) >= 4) {
+        var sv = roll(2);
+        if (this.attributes.intelligence >= 6) { dm += 1; }
+        this.verboseHistory('Commission roll ' + sv + ' + ' + dm + ' vs ' + 4);
+        if ((sv + dm) >= 4) {
             return true;
         } else {
             return false;
         }
     },
     doPromotion: function() {
-        if (this.rank == 1) {
+        if (this.rank == 4) {
             this.addSkill('Pilot');
         }
     },
@@ -706,35 +753,35 @@ s.merchants = {
     musterBenefits: function (dm) {
         switch(roll(1) + dm) {
             case 1:
-                this.benefits.push('Low Passage');
+                this.addBenefit.call(t, 'Low Passage');
                 break;
             case 2:
-                this.attributes.intelligence += 1;
+                this.improveAttribute('intelligence', 1);
                 break;
             case 3:
-                this.attributes.education += 1;
+                this.improveAttribute('education', 1);
                 break;
             case 4:
-                this.addSkill(cascadeGun(this.skills));
+            	this.doGunBenefit.call(t);
                 break;
             case 5:
-                this.addSkill(cascadeBlade(this.skills));
+            	this.doBladeBenefit.call(t);
                 break;
             case 6:
-                this.benefits.push('Low Passage');
+                this.addBenefit.call(t, 'Low Passage');
                 break;
             default:
-                this.benefits.push('Free Trader');
+                this.addBenefit.call(t, 'Free Trader');
         }
     },
     acquireSkill: function () {
         switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
             case 1:
                 switch(roll(1)) {
-                    case 1: this.attributes.strength += 1; break;
-                    case 2: this.attributes.dexterity += 1; break;
-                    case 3: this.attributes.endurance += 1; break;
-                    case 4: this.attributes.strength += 1; break;
+                    case 1: this.improveAttribute('strength', 1); break;
+                    case 2: this.improveAttribute('dexterity', 1); break;
+                    case 3: this.improveAttribute('endurance', 1); break;
+                    case 4: this.improveAttribute('strength', 1); break;
                     case 5: this.addSkill(cascadeBlade(this.skills)); break;
                     default: this.addSkill('Bribery');
                 }
@@ -783,10 +830,12 @@ s.other = {
         return dm;
     },
     getServiceSkills: function () { return []; },
-    checkSurvival: function (attributes) {
+    checkSurvival: function () {
         var dm = 0;
-        if (attributes.intelligence >= 9) { dm += 2; }
-        if ((roll(2) + dm) >= 5) {
+        var sv = roll(2);
+        if (this.attributes.intelligence >= 9) { dm += 2; }
+        this.verboseHistory('Survival roll ' + sv + ' + ' + dm + ' vs ' + 5);
+        if ((sv + dm) >= 5) {
             return true;
         } else {
             return false;
@@ -794,10 +843,10 @@ s.other = {
     },
     reenlistThrow: 5,
     ranks: { 0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: '' },
-    checkPromotion: function (attributes) {
+    checkPromotion: function () {
         return false;
     },
-    checkCommission: function (attributes) {
+    checkCommission: function () {
         return false;
     },
     doPromotion: function() { return; },
@@ -813,19 +862,19 @@ s.other = {
     musterBenefits: function (dm) {
         switch(roll(1) + dm) {
             case 1:
-                this.benefits.push('Low Passage');
+                this.addBenefit.call(t, 'Low Passage');
                 break;
             case 2:
-                this.attributes.intelligence += 1;
+                this.improveAttribute('intelligence', 1);
                 break;
             case 3:
-                this.attributes.education += 1;
+                this.improveAttribute('education', 1);
                 break;
             case 4:
-                this.addSkill(cascadeGun(this.skills));
+            	this.doGunBenefit.call(t);
                 break;
             case 5:
-                this.benefits.push('High Passage');
+                this.addBenefit.call(t, 'High Passage');
                 break;
             default:
                 break;
@@ -835,12 +884,12 @@ s.other = {
         switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
             case 1:
                 switch(roll(1)) {
-                    case 1: this.attributes.strength += 1; break;
-                    case 2: this.attributes.dexterity += 1; break;
-                    case 3: this.attributes.endurance += 1; break;
+                    case 1: this.improveAttribute('strength', 1); break;
+                    case 2: this.improveAttribute('dexterity', 1); break;
+                    case 3: this.improveAttribute('endurance', 1); break;
                     case 4: this.addSkill(cascadeBlade(this.skills)); break;
                     case 5: this.addSkill('Brawling'); break;
-                    default: this.attributes.social -= 1;
+                    default: this.improveAttribute('social', -1);
                 }
                 break;
             case 2:
@@ -879,6 +928,12 @@ s.other = {
 
 //------------ "t" object holds Traveller character definitions ------------//
 var t = {};
+t.urlParam = function(name, w){
+    w = w || window;
+    var rx = new RegExp('[\&|\?]'+name+'=([^\&\#]+)'),
+        val = w.location.search.match(rx);
+    return !val ? '':val[1];
+}
 t.age = 18;
 t.gender = function () {
     if (roll(1) <= 2) {
@@ -888,10 +943,29 @@ t.gender = function () {
     }
 }();
 t.name = generateName(t.gender);
+t.showHistory = 'simple';
 t.terms = 0;
 t.credits = 0;
 t.history = [];
 t.benefits = [];
+t.bladeBenefit = '';
+t.gunBenefit = '';
+t.doBladeBenefit = function () {
+    if (t.bladeBenefit == '') {
+        t.bladeBenefit = cascadeBlade(t.skills);
+        t.addBenefit(t.bladeBenefit);
+    } else {
+        t.addSkill(t.bladeBenefit);
+    }
+}
+t.doGunBenefit = function () {
+    if (t.gunBenefit == '') {
+        t.gunBenefit = cascadeGun(t.skills);
+        t.addBenefit(t.gunBenefit);
+    } else {
+        t.addSkill(t.gunBenefit);
+    }
+}
 t.attributes = {
     strength: roll(2),
     dexterity: roll(2),
@@ -908,7 +982,7 @@ t.getAttrString = function () {
           decToHex(t.attributes.education) +
           decToHex(t.attributes.social);
 };
-t.skillPoints = 1;
+t.skillPoints = 0;
 t.skills = [];
 t.checkSkill = function (skill) {
     var skillKnown = false;
@@ -927,36 +1001,112 @@ t.addSkill = function (skill, skillLevel) {
         for (var i = 0, limit = t.skills.length; i < limit; i++) {
             if (t.skills[i][0] == skill) {
                 t.skills[i][1] += skillLevel;
+                t.verboseHistory('Improved ' + skill + '-' + t.skills[i][1]);
             }
         }
     } else {
         t.skills.push([skill, skillLevel]);
+        t.verboseHistory('Learned ' + skill + '-' + skillLevel);
     }
 };
+t.improveAttribute = function (attrib, delta) {
+    if (! delta) {
+        delta = 1;
+    }
+    t.attributes[attrib] += delta;
+    t.verboseHistory((delta > 0 ? 'Increased ' : 'Decreased ') +
+                 attrib + ' by ' + delta + ' to ' +
+                 t.attributes[attrib]);
+}
+t.addBenefit = function (benefit) {
+    t.benefits.push(benefit);
+    t.verboseHistory(benefit);
+}
+t.verboseHistory = function(text) {
+    if (t.showHistory == 'verbose' || t.showHistory == 'debug') {
+       t.history.push(text);
+    }
+}
+t.debugHistory = function(text) {
+    if (t.showHistory == 'debug') {
+       t.history.push(text);
+    }
+}
+t.drafted = false;
 t.service = function() {
+    if (t.urlParam('history') == 'verbose') {
+        t.showHistory = 'verbose';
+    } else if (t.urlParam('history') == 'debug') {
+        t.showHistory = 'debug';
+    } else if (t.urlParam('history') == 'none') {
+        t.showHistory = 'none';
+    }
+    t.verboseHistory('Rolled attributes: ' + t.getAttrString());
     // In which service should we try to enlist?
-    var preferredService = arnd(s.services);
-    var preferredServiceDM = 1;
+    var preferredService;
+    var preferredServiceScore;
     var thisService;
-    var thisServiceDM;
+    var thisServiceScore;
+    var minscore = +t.urlParam('minscore');
+    if (minscore == 0) {
+        minscore = 1;
+    }
+    if (t.urlParam('service') !== '') {
+        // preferred service is given in the URL
+        preferredService = t.urlParam('service');
+    } else {
+        // Initially pick a random service
+        preferredService = arnd(s.services);
+    }
+
+    // Compute the initial service pick's DM, if it's less than minscore,
+    // bump it to minscore to favor the chosen service.
+    preferredServiceScore = s[preferredService].enlistmentDM(t.attributes);
+    if (preferredServiceScore < minscore) {
+    	preferredServiceScore = minscore;
+    }
+
+    t.debugHistory('Starting with ' + s[preferredService].serviceName +
+                   ' score ' + preferredServiceScore);
     for (var i = 0, limit = s.services.length; i < limit; i++) {
         thisService = s.services[i];
-        thisServiceDM = s[thisService].enlistmentDM(t.attributes);
-        if (thisServiceDM > preferredServiceDM) {
+        thisServiceScore = s[thisService].enlistmentDM(t.attributes);
+        if (thisServiceScore > preferredServiceScore) {
+            t.debugHistory('Switching to ' +
+                           s[thisService].serviceName + ' because score ' +
+                           thisServiceScore + ' > ' + preferredServiceScore);
             preferredService = thisService;
-            preferredServiceDM = thisServiceDM;
-        } else if (thisServiceDM == preferredServiceDM) {
+            preferredServiceScore = thisServiceScore;
+        } else if (thisServiceScore == preferredServiceScore) {
             if (roll(2) > 7) {
+                t.debugHistory('Switching to ' +
+                               s[thisService].serviceName + ' because score ' +
+                               thisServiceScore + ' == ' +
+                               preferredServiceScore);
                 preferredService = thisService;
-                preferredServiceDM = thisServiceDM;
+                preferredServiceScore = thisServiceScore;
             }
         }
     }
+    // Now we need to make sure we use the correct service DM
+    preferredServiceDM = s[preferredService].enlistmentDM(t.attributes);
     // Attempt to enlist
-    t.history.push('Attempted to enlist in ' +
-        s[preferredService].serviceName + '.');
     var serviceSkills = [];
-    if ((roll(2) + preferredServiceDM) >= s[preferredService].enlistmentThrow) {
+    var en = roll(2);
+    if (minscore == 9999) {
+        t.history.push('Automatic enlistment in ' +
+            s[preferredService].serviceName);
+        serviceSkills = s[preferredService].getServiceSkills();
+        for (var i = 0, limit = serviceSkills.length; i < limit; i++) {
+            t.addSkill(serviceSkills[i]);
+        }
+        return preferredService;
+    }
+    t.history.push('Attempted to enlist in ' +
+        s[preferredService].serviceName + ', roll ' + en +
+        ' + ' + preferredServiceDM + ' vs ' +
+        s[preferredService].enlistmentThrow);
+    if ((en + preferredServiceDM) >= s[preferredService].enlistmentThrow) {
         t.history.push('Enlistment accepted.');
         serviceSkills = s[preferredService].getServiceSkills();
         for (var i = 0, limit = serviceSkills.length; i < limit; i++) {
@@ -964,8 +1114,14 @@ t.service = function() {
         }
         return preferredService;
     } else {
+        var draftService;
+        t.drafted = true;
         t.history.push('Enlistment denied.');
-        var draftService = s.draft();
+        if (minscore == 8888) {
+            draftService = preferredService;
+        } else {
+            draftService = s.draft();
+        }
         t.history.push('Drafted into ' + draftService + '.');
         serviceSkills = s[draftService].getServiceSkills();
         for (var i = 0, limit = serviceSkills.length; i < limit; i++) {
@@ -983,25 +1139,33 @@ t.retirementPay = 0;
 t.doServiceTerm = function () {
     t.terms += 1;
     t.age += 4;
+    t.verboseHistory('--------------------------------------------');
+    t.verboseHistory('Term ' +
+        t.terms + ' age ' + t.age);
     if (t.service == 'scouts') {
         t.skillPoints += 2;
+    } else if (t.terms == 1) {
+    	t.skillPoints += 1;
     } else {
         t.skillPoints += 1;
     }
     // Check commission:
-    if (! t.commissioned) {
-        if (s[t.service].checkCommission(t.attributes)) {
+    if (t.drafted && t.terms == 1) {
+    	t.verboseHistory('Skipping commision because of draft.');
+    } else if (! t.commissioned) {
+        if (s[t.service].checkCommission.call(t)) {
             t.commissioned = true;
             t.rank += 1;
             t.skillPoints += 1;
             s[t.service].doPromotion.call(t);
             t.history.push('Commissioned during ' +
-                intToOrdinal(t.terms) + ' term of service.');
+                intToOrdinal(t.terms) + ' term of service as ' +
+                s[t.service].ranks[t.rank] + '.');
         }
     }
     // Try for promotion:
     if (t.commissioned && (t.rank < 6)) {
-        if (s[t.service].checkPromotion(t.attributes)) {
+        if (s[t.service].checkPromotion.call(t)) {
             t.rank += 1;
             t.skillPoints += 1;
             t.history.push('Promoted to ' + s[t.service].ranks[t.rank] + '.');
@@ -1012,7 +1176,7 @@ t.doServiceTerm = function () {
         t.skillPoints -= 1;
     }
     // Check survival:
-    if (! s[t.service].checkSurvival(t.attributes)) {
+    if (! s[t.service].checkSurvival.call(t)) {
         t.history.push('Death in service.');
         t.deceased = true;
     }
@@ -1022,6 +1186,8 @@ t.musterOut = function () {
     var cashDM = 0;
     var benefitsDM = 0;
     var musterRolls = t.terms;
+    t.verboseHistory('--------------------------------------------');
+    t.verboseHistory('Mustered Out');
     if ((t.rank == 1) || (t.rank == 2)) {
         musterRolls += 1;
     } else if ((t.rank == 3) || (t.rank == 4)) {
@@ -1031,17 +1197,19 @@ t.musterOut = function () {
         musterRolls += 3;
     }
     if (t.checkSkill('Gambling')) {
-        benefitsDM += 1;
+        cashDM += 1;
     }
-    for (var i = 0, limit = musterRolls; i <= limit; i++) {
+    for (var i = 1, limit = musterRolls; i <= limit; i++) {
         if (i <= 3) {
-            t.credits += s[t.service].musterCash[roll(1) + benefitsDM];
+            var cash = s[t.service].musterCash[roll(1) + cashDM]
+            t.credits += cash;
+            t.verboseHistory(cash + ' credits');
         } else {
             s[t.service].musterBenefits.call(t, benefitsDM);
         }
     }
     // Figure annual retirement pay:
-    if (t.terms >= 5) {
+    if (t.terms >= 5 && t.service !== 'scouts' && t.service !== 'other') {
         switch(t.terms) {
             case 5:
                 t.retirementPay = 4000;
@@ -1066,6 +1234,8 @@ t.musterOut = function () {
 };
 t.doReenlistment = function () {
     var reenlistRoll = roll(2);
+    t.verboseHistory('Reenlistment roll ' + reenlistRoll + ' vs ' +
+                   s[t.service].reenlistThrow);
     if (reenlistRoll == 12) {
         t.history.push('Manditory reenlistment for ' +
             intToOrdinal(t.terms + 1) + ' term.');
@@ -1095,23 +1265,28 @@ t.doReenlistment = function () {
         }
     }
 };
+t.ageAttribute = function(attrib, req) {
+    var agingRoll = roll(2);
+    t.verboseHistory('Aging ' + attrib + ' throw ' + agingRoll + ' vs ' + req);
+    if (agingRoll <= req) { t.improveAttribute(attrib, -1); }
+}
 t.doAging = function () {
     // Age-related attribute loss?
     if (t.age < 34) {
         return;
     } else if (t.age <= 46) {
-        if (roll(2) <= 8) { t.attributes.strength -= 1; }
-        if (roll(2) <= 7) { t.attributes.dexterity -= 1; }
-        if (roll(2) <= 8) { t.attributes.endurance -= 1; }
+        t.ageAttribute('strength', 8);
+        t.ageAttribute('dexterity', 7);
+        t.ageAttribute('endurance', 8);
     } else if (t.age <= 62) {
-        if (roll(2) <= 9) { t.attributes.strength -= 1; }
-        if (roll(2) <= 8) { t.attributes.dexterity -= 1; }
-        if (roll(2) <= 9) { t.attributes.endurance -= 1; }
+        t.ageAttribute('strength', 9);
+        t.ageAttribute('dexterity', 8);
+        t.ageAttribute('endurance', 9);
     } else {
-        if (roll(2) <= 9) { t.attributes.strength -= 1; }
-        if (roll(2) <= 9) { t.attributes.dexterity -= 1; }
-        if (roll(2) <= 9) { t.attributes.endurance -= 1; }
-        if (roll(2) <= 9) { t.attributes.intelligence -= 1; }
+       t.ageAttribute('strength', 9);
+       t.ageAttribute('dexterity', 9);
+       t.ageAttribute('endurance', 9);
+       t.ageAttribute('intelligence', 9);
     }
     // Aging crisis?
     for (var a in t.attributes) {
@@ -1239,6 +1414,9 @@ t.toString = function () {
             } else { return ''; }
         }).call(this) +
         (function () {
+            if (this.showHistory == 'none') {
+                return "";
+            }
             var history = "Service History:\n";
             for (var i = 0, limit = this.history.length; i < limit; i++) {
                 history = history + this.history[i] + "\n";
