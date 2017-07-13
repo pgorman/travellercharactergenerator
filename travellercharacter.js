@@ -1023,9 +1023,20 @@ t.improveAttribute = function (attrib, delta) {
         delta = 1;
     }
     t.attributes[attrib] += delta;
-    t.verboseHistory((delta > 0 ? 'Increased ' : 'Decreased ') +
-                 attrib + ' by ' + delta + ' to ' +
-                 t.extendedHex(t.attributes[attrib]));
+    if (t.attributes[attrib] < 1 && attrib == 'social') {
+        // Don't let other social reduction take below 1
+        t.verboseHistory('Decreased ' + attrib +
+                         ' below 1, keeping it at 1');
+        t.attributes[attrib] = 1;
+    } else {
+        if (t.attributes[attrib] < 0) {
+            // Don't let reduction take below 0.
+            t.attributes[attrib] = 0;
+        }
+        t.verboseHistory((delta > 0 ? 'Increased ' : 'Decreased ') +
+                     attrib + ' by ' + delta + ' to ' +
+                     t.extendedHex(t.attributes[attrib]));
+    }
 }
 t.addBenefit = function (benefit) {
     t.benefits.push(benefit);
@@ -1273,33 +1284,38 @@ t.doReenlistment = function () {
         }
     }
 };
-t.ageAttribute = function(attrib, req) {
+t.ageAttribute = function(attrib, req, reduction) {
     var agingRoll = roll(2);
     t.verboseHistory('Aging ' + attrib + ' throw ' + agingRoll + ' vs ' + req);
-    if (agingRoll < req) { t.improveAttribute(attrib, -1); }
+    if (agingRoll < req) {
+        t.improveAttribute(attrib, reduction);
+    }
 }
 t.doAging = function () {
     // Age-related attribute loss?
     if (t.age < 34) {
         return;
     } else if (t.age <= 46) {
-        t.ageAttribute('strength', 8);
-        t.ageAttribute('dexterity', 7);
-        t.ageAttribute('endurance', 8);
+        t.ageAttribute('strength', 8, -1);
+        t.ageAttribute('dexterity', 7, -1);
+        t.ageAttribute('endurance', 8, -1);
     } else if (t.age <= 62) {
-        t.ageAttribute('strength', 9);
-        t.ageAttribute('dexterity', 8);
-        t.ageAttribute('endurance', 9);
+        t.ageAttribute('strength', 9, -1);
+        t.ageAttribute('dexterity', 8, -1);
+        t.ageAttribute('endurance', 9, -1);
     } else {
-       t.ageAttribute('strength', 9);
-       t.ageAttribute('dexterity', 9);
-       t.ageAttribute('endurance', 9);
-       t.ageAttribute('intelligence', 9);
+       t.ageAttribute('strength', 9, -2);
+       t.ageAttribute('dexterity', 9, -2);
+       t.ageAttribute('endurance', 9, -2);
+       t.ageAttribute('intelligence', 9, -1);
     }
     // Aging crisis?
     for (var a in t.attributes) {
         if (t.attributes[a] < 1) {
-            if (roll(2) <= 8) {
+            var cr = roll(2);
+            t.verboseHistory('Aging crisis due to ' + a +
+                             ' dropping below 1 roll ' + cr + ' vs 8');
+            if (cr < 8) {
                 t.history.push("Died of illness.");
                 t.deceased = true;
             } else {
