@@ -29,6 +29,8 @@
 //     ship - don't roll for cash until a ship is acquired if possible
 //     TAS - don't roll for cash until Travellers' is acquired if possible
 //     special - combination of above
+//     split - alternate cash and material benefits rolls (until mmaximum
+//             number of cash rolls have been taken).
 //
 // maxcash=
 //     The maximum number of cash rolls to make, if not combined with
@@ -1307,11 +1309,12 @@ t.musterOut = function () {
         cashDM += 1;
     }
     if (t.musterStrategy != '') {
-        looking = s[t.service].canMuster(t.musterStrategy);
+        looking = s[t.service].canMuster(t.musterStrategy) ||
+                  t.musterStrategy == 'split';
     }
     for (var i = 1, limit = musterRolls; i <= limit; i++) {
-        if ((!looking && i <= maxCash) ||
-            ((t.found || found) && cashUsed < maxCash)) {
+        if (cashUsed <= maxCash && (!looking || t.found || found ||
+            (t.musterStrategy == 'split' && (i % 2) == 1))) {
             var cash = s[t.service].musterCash[roll(1) + cashDM]
             t.credits += cash;
             t.verboseHistory(numCommaSep(cash) + ' credits');
