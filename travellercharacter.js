@@ -859,7 +859,7 @@ s.merchants = {
             case 3:
                 switch(roll(1)) {
                     case 1: this.addSkill('Streetwise'); break;
-                    case 2: this.addSkill('Mechianical'); break;
+                    case 2: this.addSkill('Mechanical'); break;
                     case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Navigation'); break;
                     case 5: this.addSkill('Gunnery'); break;
@@ -969,7 +969,7 @@ s.other = {
             case 3:
                 switch(roll(1)) {
                     case 1: this.addSkill('Streetwise'); break;
-                    case 2: this.addSkill('Mechianical'); break;
+                    case 2: this.addSkill('Mechanical'); break;
                     case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Gambling'); break;
                     case 5: this.addSkill('Brawling'); break;
