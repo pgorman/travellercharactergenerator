@@ -275,7 +275,7 @@ s.navy = {
     },
     acquireSkill: function () {
         // Skills acquired during a term of service.
-        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+        switch(this.whichSkillTable.call(this)) {
             case 1:
                 switch(roll(1)) {
                     case 1: this.improveAttribute('strength', 1); break;
@@ -421,7 +421,7 @@ s.marines = {
         return strategy == 'TAS' || strategy == 'special';
     },
     acquireSkill: function () {
-        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+        switch(this.whichSkillTable.call(this)) {
             case 1:
                 switch(roll(1)) {
                     case 1: this.improveAttribute('strength', 1); break;
@@ -563,7 +563,7 @@ s.army = {
         return false;
     },
     acquireSkill: function () {
-        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+        switch(this.whichSkillTable.call(this)) {
             case 1:
                 switch(roll(1)) {
                     case 1: this.improveAttribute('strength', 1); break;
@@ -682,7 +682,7 @@ s.scouts = {
         return strategy == 'ship' || strategy == 'special';
     },
     acquireSkill: function () {
-        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+        switch(this.whichSkillTable.call(this)) {
             case 1:
                 switch(roll(1)) {
                     case 1: this.improveAttribute('strength', 1); break;
@@ -835,7 +835,7 @@ s.merchants = {
         return strategy == 'ship' || strategy == 'special';
     },
     acquireSkill: function () {
-        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+        switch(this.whichSkillTable.call(this)) {
             case 1:
                 switch(roll(1)) {
                     case 1: this.improveAttribute('strength', 1); break;
@@ -945,7 +945,7 @@ s.other = {
         return false;
     },
     acquireSkill: function () {
-        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+        switch(this.whichSkillTable.call(this)) {
             case 1:
                 switch(roll(1)) {
                     case 1: this.improveAttribute('strength', 1); break;
@@ -1073,6 +1073,13 @@ t.checkSkillLevel = function (skill, level) {
         return false;
     }
     return t.skills[i][1] >= level;
+}
+t.whichSkillTable = function() {
+    if (this.urlParam('personal') == 'always') {
+        return rndInt(1, 3 + (this.attributes.education >= 8 ? 1 : 0));
+    } else {
+        return rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0);
+    }
 }
 t.addSkill = function (skill, skillLevel) {
     var i = t.checkSkill(skill);
