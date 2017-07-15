@@ -24,6 +24,28 @@
 //     as having been drafted, but the preferred service is chosen). These
 //     special values allow generating characters that are a specific
 //     service.
+//
+// muster=
+//     ship - don't roll for cash until a ship is acquired if possible
+//     TAS - don't roll for cash until Travellers' is acquired if possible
+//     special - combination of above
+//     split - alternate cash and material benefits rolls (until mmaximum
+//             number of cash rolls have been taken).
+//
+// maxcash=
+//     The maximum number of cash rolls to make, if not combined with
+//     muster, any cash rolls will be taken first.
+//
+//
+// hunt=
+//     ship - keep rolling characters until a ship is acquired
+//     TAS - keep rolling characters until Travellers' is acquired
+//     special - keep rolling until ship or TAS is acquired
+//     skill - keep rolling until skill is acquired
+//
+// level=
+//     when used with hunt=skill, specifies the level of skill sought
+//
 function travellerCharacter(output) {
 // output is 'text', 'html', or 'JSON'.
 
@@ -89,6 +111,14 @@ function generateName(gender) {
     }
     var family = ['Abe', 'Anderson', 'Bautista', 'Bauer', 'Becker', 'Brown', 'Chang', 'Chen', 'Chu', 'Cohen', 'Colombo', 'Cruz', 'Das', 'Das', 'Davies', 'Díaz', 'Dubois', 'Esposito', 'Evans', 'Fernandes', 'Fontana', 'Fujii', 'García', 'Gazi', 'Green', 'Gruber', 'Hall', 'Han', 'Hernández', 'Hoffmann', 'Hon', 'Hong', 'Itō', 'Ivanov', 'Jensen', 'Jones', 'Kask', 'Katz', 'Kelly', 'Khan', 'Kim', 'Klein', 'Kowalski', 'Larsen', 'Lee', 'Li', 'Lin', 'Ma', 'Martin', 'Mirza', 'Moreau', 'Murphy', 'Nakamura', 'Novák', 'Ota', 'Papadopoulos', 'Pérez', 'Petrov', 'Pavlov', 'Popov', 'Quinn', 'Reyes', 'Rizzo', 'Robinson', 'Rodríguez', 'Rossi', 'Saar', 'Santos', 'Satō', 'Schmidt', 'Shin', 'Silva', 'Sokolov', 'Sullivan', 'Sun', 'Suzuki', 'Singh', 'Smith', 'Tamm', 'Tanaka', 'Taylor', 'Varga', 'Wagner', 'Wang', 'Watanabe', 'Weber', 'Wen', 'White', 'Williams', 'Wilson', 'Wood', 'Wu', 'Yamamoto', 'Yamazaki', 'Yang', 'Zhang'];
     return arnd(given) + ' ' + arnd(family);
+}
+
+function generateGender() {
+    if (roll(1) <= 2) {
+        return 'female';
+    } else {
+        return 'male';
+    }
 }
 
 //------------------------ Cascade Skills ------------------------//
@@ -233,6 +263,7 @@ s.navy = {
                     break;
                 }
                 this.addBenefit.call(t, "Travellers' Aid Society");
+                this.TAS = true;
                 break;
             case 6:
                 this.addBenefit.call(t, 'High Passage');
@@ -241,9 +272,12 @@ s.navy = {
                 this.improveAttribute('social', 2);
         }
     },
+    canMuster: function (strategy) {
+        return strategy == 'TAS' || strategy == 'special';
+    },
     acquireSkill: function () {
         // Skills acquired during a term of service.
-        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+        switch(this.whichSkillTable.call(this)) {
             case 1:
                 switch(roll(1)) {
                     case 1: this.improveAttribute('strength', 1); break;
@@ -376,6 +410,7 @@ s.marines = {
                     break;
                 }
                 this.addBenefit.call(t, "Travellers' Aid Society");
+                this.TAS = true;
                 break;
             case 6:
                 this.addBenefit.call(t, 'High Passage');
@@ -384,8 +419,11 @@ s.marines = {
                 this.improveAttribute('social', 2);
         }
     },
+    canMuster: function (strategy) {
+        return strategy == 'TAS' || strategy == 'special';
+    },
     acquireSkill: function () {
-        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+        switch(this.whichSkillTable.call(this)) {
             case 1:
                 switch(roll(1)) {
                     case 1: this.improveAttribute('strength', 1); break;
@@ -523,8 +561,11 @@ s.army = {
                 this.improveAttribute('social', 1);
         }
     },
+    canMuster: function (strategy) {
+        return false;
+    },
     acquireSkill: function () {
-        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+        switch(this.whichSkillTable.call(this)) {
             case 1:
                 switch(roll(1)) {
                     case 1: this.improveAttribute('strength', 1); break;
@@ -629,16 +670,21 @@ s.scouts = {
                 break;
             case 6:
                 if (this.benefits.indexOf('Scout Ship') > -1) {
+                    this.debugHistory('No benefit');
                     break;
                 }
                 this.addBenefit.call(t, 'Scout Ship');
+                this.ship = true;
                 break;
             default:
                 this.improveAttribute('social', 1);
         }
     },
+    canMuster: function (strategy) {
+        return strategy == 'ship' || strategy == 'special';
+    },
     acquireSkill: function () {
-        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+        switch(this.whichSkillTable.call(this)) {
             case 1:
                 switch(roll(1)) {
                     case 1: this.improveAttribute('strength', 1); break;
@@ -708,6 +754,7 @@ s.merchants = {
     },
     reenlistThrow: 4,
     ranks: {
+        0: '',
         1: '4th Officer',
         2: '3rd Officer',
         3: '2nd Officer',
@@ -772,11 +819,25 @@ s.merchants = {
                 this.addBenefit.call(t, 'Low Passage');
                 break;
             default:
-                this.addBenefit.call(t, 'Free Trader');
+                if (this.benefits.indexOf('Free Trader') > -1) {
+                    this.mortgages += 1;
+                    if (this.mortgage > 0) {
+                        this.mortgage -= 10;
+                        this.verboseHistory('10 years of mortgage paid off');
+                    } else {
+                        this.debugHistory('No benefit');
+                    }
+                } else {
+                    this.addBenefit.call(t, 'Free Trader');
+                    this.ship = true;
+                }
         }
     },
+    canMuster: function (strategy) {
+        return strategy == 'ship' || strategy == 'special';
+    },
     acquireSkill: function () {
-        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+        switch(this.whichSkillTable.call(this)) {
             case 1:
                 switch(roll(1)) {
                     case 1: this.improveAttribute('strength', 1); break;
@@ -800,7 +861,7 @@ s.merchants = {
             case 3:
                 switch(roll(1)) {
                     case 1: this.addSkill('Streetwise'); break;
-                    case 2: this.addSkill('Mechianical'); break;
+                    case 2: this.addSkill('Mechanical'); break;
                     case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Navigation'); break;
                     case 5: this.addSkill('Gunnery'); break;
@@ -878,11 +939,15 @@ s.other = {
                 this.addBenefit.call(t, 'High Passage');
                 break;
             default:
+                this.debugHistory('No benefit');
                 break;
         }
     },
+    canMuster: function (strategy) {
+        return false;
+    },
     acquireSkill: function () {
-        switch(rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0)) {
+        switch(this.whichSkillTable.call(this)) {
             case 1:
                 switch(roll(1)) {
                     case 1: this.improveAttribute('strength', 1); break;
@@ -906,7 +971,7 @@ s.other = {
             case 3:
                 switch(roll(1)) {
                     case 1: this.addSkill('Streetwise'); break;
-                    case 2: this.addSkill('Mechianical'); break;
+                    case 2: this.addSkill('Mechanical'); break;
                     case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Gambling'); break;
                     case 5: this.addSkill('Brawling'); break;
@@ -935,20 +1000,23 @@ t.urlParam = function(name, w){
         val = w.location.search.match(rx);
     return !val ? '':val[1];
 }
+t.urlParams = function(w){
+    w = w || window;
+    var rx = new RegExp('[\?]([^\#]+)'),
+        val = w.location.search.match(rx);
+    return !val ? '':val[1];
+}
 t.age = 18;
-t.gender = function () {
-    if (roll(1) <= 2) {
-        return 'female';
-    } else {
-        return 'male';
-    }
-}();
+t.gender = generateGender();
 t.name = generateName(t.gender);
 t.showHistory = 'simple';
 t.terms = 0;
 t.credits = 0;
 t.history = [];
 t.benefits = [];
+t.ship = false;
+t.TAS = false;
+t.mortgage = 40;
 t.bladeBenefit = '';
 t.gunBenefit = '';
 t.doBladeBenefit = function () {
@@ -975,36 +1043,54 @@ t.attributes = {
     education: roll(2),
     social: roll(2),
 };
+t.extendedHex = function (val) {
+    var xhex = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ'.split('');
+    if (val < 34) {
+        return xhex[val];
+    } else {
+        return '?';
+    }
+}     
 t.getAttrString = function () {
-    return decToHex(t.attributes.strength) +
-          decToHex(t.attributes.dexterity) +
-          decToHex(t.attributes.endurance) +
-          decToHex(t.attributes.intelligence) +
-          decToHex(t.attributes.education) +
-          decToHex(t.attributes.social);
+    return t.extendedHex(t.attributes.strength) +
+          t.extendedHex(t.attributes.dexterity) +
+          t.extendedHex(t.attributes.endurance) +
+          t.extendedHex(t.attributes.intelligence) +
+          t.extendedHex(t.attributes.education) +
+          t.extendedHex(t.attributes.social);
 };
 t.skillPoints = 0;
 t.skills = [];
 t.checkSkill = function (skill) {
-    var skillKnown = false;
     for (var i = 0, limit = t.skills.length; i < limit; i++) {
         if (t.skills[i][0] == skill) {
-            skillKnown = true;
+            return i;
         }
     }
-    return skillKnown;
+    return -1;
 };
+t.checkSkillLevel = function (skill, level) {
+    i = t.checkSkill(skill);
+    if (i < 0) {
+        return false;
+    }
+    return t.skills[i][1] >= level;
+}
+t.whichSkillTable = function() {
+    if (this.urlParam('personal') == 'always') {
+        return rndInt(1, 3 + (this.attributes.education >= 8 ? 1 : 0));
+    } else {
+        return rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0);
+    }
+}
 t.addSkill = function (skill, skillLevel) {
+    var i = t.checkSkill(skill);
     if (! skillLevel) {
         skillLevel = 1;
     }
-    if (t.checkSkill(skill)) {
-        for (var i = 0, limit = t.skills.length; i < limit; i++) {
-            if (t.skills[i][0] == skill) {
-                t.skills[i][1] += skillLevel;
-                t.verboseHistory('Improved ' + skill + '-' + t.skills[i][1]);
-            }
-        }
+    if (i >= 0) {
+        t.skills[i][1] += skillLevel;
+        t.verboseHistory('Improved ' + skill + '-' + t.skills[i][1]);
     } else {
         t.skills.push([skill, skillLevel]);
         t.verboseHistory('Learned ' + skill + '-' + skillLevel);
@@ -1015,9 +1101,20 @@ t.improveAttribute = function (attrib, delta) {
         delta = 1;
     }
     t.attributes[attrib] += delta;
-    t.verboseHistory((delta > 0 ? 'Increased ' : 'Decreased ') +
-                 attrib + ' by ' + delta + ' to ' +
-                 t.attributes[attrib]);
+    if (t.attributes[attrib] < 1 && attrib == 'social') {
+        // Don't let other social reduction take below 1
+        t.verboseHistory('Decreased ' + attrib +
+                         ' below 1, keeping it at 1');
+        t.attributes[attrib] = 1;
+    } else {
+        if (t.attributes[attrib] < 0) {
+            // Don't let reduction take below 0.
+            t.attributes[attrib] = 0;
+        }
+        t.verboseHistory((delta > 0 ? 'Increased ' : 'Decreased ') +
+                     attrib + ' by ' + delta + ' to ' +
+                     t.extendedHex(t.attributes[attrib]));
+    }
 }
 t.addBenefit = function (benefit) {
     t.benefits.push(benefit);
@@ -1034,7 +1131,7 @@ t.debugHistory = function(text) {
     }
 }
 t.drafted = false;
-t.service = function() {
+t.determineService = function() {
     if (t.urlParam('history') == 'verbose') {
         t.showHistory = 'verbose';
     } else if (t.urlParam('history') == 'debug') {
@@ -1128,7 +1225,8 @@ t.service = function() {
         }
         return draftService;
     }
-}();
+};
+t.service = t.determineService.call();
 t.deceased = false;
 t.commissioned = false;
 t.rank = 0;
@@ -1144,7 +1242,7 @@ t.doServiceTerm = function () {
     if (t.service == 'scouts') {
         t.skillPoints += 2;
     } else if (t.terms == 1) {
-    	t.skillPoints += 1;
+    	t.skillPoints += 2;
     } else {
         t.skillPoints += 1;
     }
@@ -1167,6 +1265,7 @@ t.doServiceTerm = function () {
         if (s[t.service].checkPromotion.call(t)) {
             t.rank += 1;
             t.skillPoints += 1;
+            s[t.service].doPromotion.call(t);
             t.history.push('Promoted to ' + s[t.service].ranks[t.rank] + '.');
         }
     }
@@ -1178,13 +1277,24 @@ t.doServiceTerm = function () {
     if (! s[t.service].checkSurvival.call(t)) {
         t.history.push('Death in service.');
         t.deceased = true;
+        t.activeDuty = false;
     }
 };
+t.musterStrategy = '';
+t.found = false;
 t.musterOut = function () {
     // What cash and non-cash benefits do we get when mustering out?
     var cashDM = 0;
     var benefitsDM = 0;
     var musterRolls = t.terms;
+    var maxCash = 3;
+    var cashUsed = 0;
+    var looking = false;
+    var found = false;
+    t.musterStrategy = t.urlParam('muster');
+    if (t.urlParam('cash') !== '') {
+        maxCash = t.urlParam('cash');
+    }
     t.verboseHistory('--------------------------------------------');
     t.verboseHistory('Mustered Out');
     if ((t.rank == 1) || (t.rank == 2)) {
@@ -1195,16 +1305,36 @@ t.musterOut = function () {
         benefitsDM += 1;
         musterRolls += 3;
     }
-    if (t.checkSkill('Gambling')) {
+    if (t.checkSkill('Gambling') >= 0) {
         cashDM += 1;
     }
+    if (t.musterStrategy != '') {
+        looking = s[t.service].canMuster(t.musterStrategy) ||
+                  t.musterStrategy == 'split';
+    }
     for (var i = 1, limit = musterRolls; i <= limit; i++) {
-        if (i <= 3) {
+        if (cashUsed <= maxCash && (!looking || t.found || found ||
+            (t.musterStrategy == 'split' && (i % 2) == 1))) {
             var cash = s[t.service].musterCash[roll(1) + cashDM]
             t.credits += cash;
-            t.verboseHistory(cash + ' credits');
+            t.verboseHistory(numCommaSep(cash) + ' credits');
+            cashUsed += 1;
         } else {
             s[t.service].musterBenefits.call(t, benefitsDM);
+            if (t.hunt == 'special') {
+                t.found = t.ship | t.TAS;
+            } else if (t.hunt == 'ship') {
+                t.found = t.ship;
+            } else if (t.hunt == 'TAS') {
+                t.found = t.TAS;
+            }
+            if (t.musterStrategy == 'special') {
+                found = t.ship | t.TAS;
+            } else if (t.musterStrategy == 'ship') {
+                found = t.ship;
+            } else if (t.musterStrategy == 'TAS') {
+                found = t.TAS;
+            }
         }
     }
     // Figure annual retirement pay:
@@ -1247,7 +1377,7 @@ t.doReenlistment = function () {
         t.history.push('Denied reenlistment after ' +
             intToOrdinal(t.terms) + ' term.');
     } else if (reenlistRoll >= s[t.service].reenlistThrow) {
-        if (roll(2) >= 10) {
+        if (roll(2) >= 10 && (t.hunt !== 'skill' || t.found)) {
             if (t.terms < 5) {
                 t.activeDuty = false;
                 t.history.push('Chose not to reenlist after ' +
@@ -1264,35 +1394,41 @@ t.doReenlistment = function () {
         }
     }
 };
-t.ageAttribute = function(attrib, req) {
+t.ageAttribute = function(attrib, req, reduction) {
     var agingRoll = roll(2);
     t.verboseHistory('Aging ' + attrib + ' throw ' + agingRoll + ' vs ' + req);
-    if (agingRoll <= req) { t.improveAttribute(attrib, -1); }
+    if (agingRoll < req) {
+        t.improveAttribute(attrib, reduction);
+    }
 }
 t.doAging = function () {
     // Age-related attribute loss?
     if (t.age < 34) {
         return;
     } else if (t.age <= 46) {
-        t.ageAttribute('strength', 8);
-        t.ageAttribute('dexterity', 7);
-        t.ageAttribute('endurance', 8);
+        t.ageAttribute('strength', 8, -1);
+        t.ageAttribute('dexterity', 7, -1);
+        t.ageAttribute('endurance', 8, -1);
     } else if (t.age <= 62) {
-        t.ageAttribute('strength', 9);
-        t.ageAttribute('dexterity', 8);
-        t.ageAttribute('endurance', 9);
+        t.ageAttribute('strength', 9, -1);
+        t.ageAttribute('dexterity', 8, -1);
+        t.ageAttribute('endurance', 9, -1);
     } else {
-       t.ageAttribute('strength', 9);
-       t.ageAttribute('dexterity', 9);
-       t.ageAttribute('endurance', 9);
-       t.ageAttribute('intelligence', 9);
+       t.ageAttribute('strength', 9, -2);
+       t.ageAttribute('dexterity', 9, -2);
+       t.ageAttribute('endurance', 9, -2);
+       t.ageAttribute('intelligence', 9, -1);
     }
     // Aging crisis?
     for (var a in t.attributes) {
         if (t.attributes[a] < 1) {
-            if (roll(2) <= 8) {
+            var cr = roll(2);
+            t.verboseHistory('Aging crisis due to ' + a +
+                             ' dropping below 1 roll ' + cr + ' vs 8');
+            if (cr < 8) {
                 t.history.push("Died of illness.");
                 t.deceased = true;
+                t.activeDuty = false;
             } else {
                 t.attributes[a] = 1;
             }
@@ -1342,6 +1478,15 @@ t.getNobleTitle = function () {
 };
 t.toString = function () {
     return (function() {
+            var parms = t.urlParams();
+            if (parms != '' && parms != 'history=debug' &&
+                parms != 'history=verbose' && parms != 'history=none') {
+                return 'URL Parms: ' + parms + '\n\n';
+            } else {
+                return '';
+            }
+        }).call(this) +
+        (function() {
             if (this.deceased) {
                 return '† ';
             } else {
@@ -1403,10 +1548,22 @@ t.toString = function () {
                 this.benefits.sort();
                 var benefits = "\nBenefits: ";
                 for (var i = 0, limit = this.benefits.length; i < limit; i++) {
+                    benefits += this.benefits[i];
+                    if (this.benefits[i] == 'Free Trader') {
+                        if (this.mortgage == 0) {
+                            benefits += ' (paid off - 40 years old)';
+                        } else if (this.mortgage == 40) {
+                            benefits += ' (new with a 40 year mortgage)';
+                        } else {
+                            benefits += ' (' + (40 - this.mortgage) +
+                                        ' years old, ' + this.mortgage +
+                                        ' years mortgage remaining)';
+                        }
+                    }
                     if (i < limit - 1) {
-                        benefits += this.benefits[i] + ', ';
+                        benefits += ', ';
                     } else {
-                        benefits += this.benefits[i] + "\n";
+                        benefits += "\n";
                     }
                 }
                 return benefits;
@@ -1424,16 +1581,75 @@ t.toString = function () {
         }).call(this)
     ;
 };
+t.numresets = 0;
+t.reset = function() {
+    t.numresets += 1;
+    t.history = [];
+    if (t.ship) {
+        t.ships2 += 1;
+    }
+    t.history.push('Number of resets ' + t.numresets);
+    t.age = 18;
+    t.gender = generateGender();
+    t.name = generateName(t.gender);
+    t.terms = 0;
+    t.credits = 0;
+    t.benefits = [];
+    t.ship = false;
+    t.TAS = false;
+    t.mortgage = 40;
+    t.bladeBenefit = '';
+    t.gunBenefit = '';
+    t.attributes.strength = roll(2);
+    t.attributes.dexterity = roll(2);
+    t.attributes.endurance = roll(2);
+    t.attributes.intelligence = roll(2);
+    t.attributes.education = roll(2);
+    t.attributes.social = roll(2);
+    t.skillPoints = 0;
+    t.skills = [];
+    t.drafted = false;
+    t.service = t.determineService();
+    t.deceased = false;
+    t.commissioned = false;
+    t.rank = 0;
+    t.activeDuty = true;
+    t.retired = false;
+    t.retirementPay = 0;
+}
+
+t.hunt = t.urlParam('hunt');
 
 while (t.activeDuty && (! t.deceased)) {
     t.doServiceTerm();
     t.doAging();
     if (! t.deceased) {
         t.doReenlistment();
+    } else {
+        t.found = false;
     }
-}
-if (! t.deceased) {
-    t.musterOut();
+    if (t.hunt == 'skill') {
+        var level = 1;
+        var skill = t.urlParam('skill');
+        if (t.urlParam('level') !== '') {
+           level = t.urlParam('level');
+        }
+        t.found = t.checkSkillLevel(skill, level); 
+        t.debugHistory('Hunting for ' + skill + '-' + level +
+                       (t.found ? '' : ' not') + ' found');
+    }
+    if (!t.activeDuty && !t.deceased) {
+        t.musterOut();
+    }
+    if (!t.activeDuty) {
+        if (t.numresets >= 10000) {
+            break;
+        }
+        if (t.urlParam('hunt') !== '' && !t.found) {
+            t.verboseHistory('Resetting');
+            t.reset();
+        }
+    }
 }
 
 console.log(t.toString());
