@@ -994,6 +994,7 @@ s.other = {
 
 //------------ "t" object holds Traveller character definitions ------------//
 var t = {};
+t.cheat = false;
 t.urlParam = function(name, w){
     w = w || window;
     var rx = new RegExp('[\&|\?]'+name+'=([^\&\#]+)'),
@@ -1192,6 +1193,7 @@ t.determineService = function() {
     var serviceSkills = [];
     var en = roll(2);
     if (minscore == 9999) {
+        t.cheat = true;
         t.history.push('Automatic enlistment in ' +
             s[preferredService].serviceName);
         serviceSkills = s[preferredService].getServiceSkills();
@@ -1214,6 +1216,7 @@ t.determineService = function() {
         t.drafted = true;
         t.history.push('Enlistment denied.');
         if (minscore == 8888) {
+            t.cheat = true;
             draftService = preferredService;
         } else {
             draftService = s.draft();
@@ -1292,8 +1295,11 @@ t.musterOut = function () {
     var looking = false;
     var found = false;
     t.musterStrategy = t.urlParam('muster');
-    if (t.urlParam('cash') !== '') {
-        maxCash = t.urlParam('cash');
+    if (t.urlParam('maxcash') !== '') {
+        maxCash = t.urlParam('maxcash');
+        if (maxCash > 3) {
+            t.cheat |= true;
+        }
     }
     t.verboseHistory('--------------------------------------------');
     t.verboseHistory('Mustered Out');
@@ -1479,8 +1485,7 @@ t.getNobleTitle = function () {
 t.toString = function () {
     return (function() {
             var parms = t.urlParams();
-            if (parms != '' && parms != 'history=debug' &&
-                parms != 'history=verbose' && parms != 'history=none') {
+            if (t.cheat || t.showHistory == 'debug') {
                 return 'URL Parms: ' + parms + '\n\n';
             } else {
                 return '';
@@ -1648,6 +1653,7 @@ while (t.activeDuty && (! t.deceased)) {
         if (t.urlParam('hunt') !== '' && !t.found) {
             t.verboseHistory('Resetting');
             t.reset();
+            t.cheat = true;
         }
     }
 }
