@@ -46,6 +46,10 @@
 // level=
 //     when used with hunt=skill, specifies the level of skill sought
 //
+//
+// vehicles=
+//     dole out vehicle skills as one of 1977, 1981, TTB, or ST
+//     default is as TTB
 function travellerCharacter(output) {
 // output is 'text', 'html', or 'JSON'.
 
@@ -436,7 +440,12 @@ s.marines = {
                 break;
             case 2:
                 switch(roll(1)) {
-                    case 1: this.addSkill('ATV'); break;
+                    case 1: if (this.vehicles != '1981') {
+                            this.addSkill('ATV');
+                        } else {
+                            this.addSkill(cascadeVehicle(this.skills));
+                        }
+                        break;
                     case 2: this.addSkill('Vacc Suit'); break;
                     case 3: this.addSkill(cascadeBlade(this.skills)); break;
                     case 4: this.addSkill(cascadeGun(this.skills)); break;
@@ -446,7 +455,12 @@ s.marines = {
                 break;
             case 3:
                 switch(roll(1)) {
-                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
+                    case 1: if (this.vehicles == '1977') {
+                            this.addSkill('ATV');
+                        } else {
+                            this.addSkill(cascadeVehicle(this.skills));
+                        }
+                        break;
                     case 2: this.addSkill('Mechanical'); break;
                     case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Tactics'); break;
@@ -578,7 +592,12 @@ s.army = {
                 break;
             case 2:
                 switch(roll(1)) {
-                    case 1: this.addSkill('ATV'); break;
+                    case 1: if (this.vehicles != '1981') {
+                            this.addSkill('ATV');
+                        } else {
+                            this.addSkill(cascadeVehicle(this.skills));
+                        }
+                        break;
                     case 2: this.addSkill('Air/Raft'); break;
                     case 3: this.addSkill(cascadeGun(this.skills)); break;
                     case 4: this.addSkill('Fwd Obsvr'); break;
@@ -588,7 +607,12 @@ s.army = {
                 break;
             case 3:
                 switch(roll(1)) {
-                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
+                    case 1: if (this.vehicles == '1977') {
+                            this.addSkill('ATV');
+                        } else {
+                            this.addSkill(cascadeVehicle(this.skills));
+                        }
+                        break;
                     case 2: this.addSkill('Mechanical'); break;
                     case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Tactics'); break;
@@ -707,7 +731,12 @@ s.scouts = {
                 break;
             case 3:
                 switch(roll(1)) {
-                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
+                    case 1: if (this.vehicles == '1977') {
+                            this.addSkill('Air/Raft');
+                        } else {
+                            this.addSkill(cascadeVehicle(this.skills));
+                        }
+                        break;
                     case 2: this.addSkill('Mechanical'); break;
                     case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Jack-o-T'); break;
@@ -850,7 +879,12 @@ s.merchants = {
                 break;
             case 2:
                 switch(roll(1)) {
-                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
+                    case 1: if (this.vehicles == '1977') {
+                            this.improveAttribute('strength', 1);
+                        } else {
+                            this.addSkill(cascadeVehicle(this.skills));
+                        }
+                        break;
                     case 2: this.addSkill('Vacc Suit'); break;
                     case 3: this.addSkill('Jack-o-T'); break;
                     case 4: this.addSkill('Steward'); break;
@@ -960,7 +994,12 @@ s.other = {
                 break;
             case 2:
                 switch(roll(1)) {
-                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
+                    case 1: if (this.vehicles == '1977') {
+                            this.addSkill('Forgery');
+                        } else {
+                            this.addSkill(cascadeVehicle(this.skills));
+                        }
+                        break;
                     case 2: this.addSkill('Gambling'); break;
                     case 3: this.addSkill('Brawling'); break;
                     case 4: this.addSkill('Bribery'); break;
@@ -1020,6 +1059,7 @@ t.TAS = false;
 t.mortgage = 40;
 t.bladeBenefit = '';
 t.gunBenefit = '';
+t.vehicles = 'TTB';
 t.doBladeBenefit = function () {
     if (t.bladeBenefit == '') {
         t.bladeBenefit = cascadeBlade(t.skills);
@@ -1139,6 +1179,9 @@ t.determineService = function() {
         t.showHistory = 'debug';
     } else if (t.urlParam('history') == 'none') {
         t.showHistory = 'none';
+    }
+    if (t.urlParam('vehicles') != '') {
+        t.vehicles = t.urlParam('vehicles');
     }
     t.verboseHistory('Rolled attributes: ' + t.getAttrString());
     // In which service should we try to enlist?
