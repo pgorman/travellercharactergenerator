@@ -1362,7 +1362,7 @@ t.musterOut = function () {
                   t.musterStrategy == 'split';
     }
     for (var i = 1, limit = musterRolls; i <= limit; i++) {
-        if (cashUsed <= maxCash && (!looking || t.found || found ||
+        if (cashUsed < maxCash && (!looking || t.found || found ||
             (t.musterStrategy == 'split' && (i % 2) == 1))) {
             var cash = s[t.service].musterCash[roll(1) + cashDM]
             t.credits += cash;
