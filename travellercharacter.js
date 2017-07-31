@@ -59,7 +59,7 @@ String.prototype.capitalize = function() {
 };
 
 function rndInt(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function arnd(a) {
@@ -1210,12 +1210,18 @@ t.checkSkillLevel = function (skill, level) {
     }
     return t.skills[i][1] >= level;
 }
+t.tables = ['personal development', 'service skills', 'advanced education',
+            'advanced education 8+'];
 t.whichSkillTable = function() {
+    var table;
     if (this.urlParam('personal') == 'always') {
-        return rndInt(1, 3 + (this.attributes.education >= 8 ? 1 : 0));
+        table = rndInt(1, 3 + (this.attributes.education >= 8 ? 1 : 0));
     } else {
-        return rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0);
+        table =  rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0);
     }
+    this.debugHistory('Skill from table ' + table + ' ' +
+                      this.tables[table - 1]);
+    return table;
 }
 t.addSkill = function (skill, skillLevel) {
     var i = t.checkSkill(skill);
