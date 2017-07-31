@@ -1788,6 +1788,9 @@ while (t.activeDuty && (! t.deceased)) {
     if (!t.activeDuty && !t.deceased) {
         t.musterOut();
     }
+    if (t.deceased) {
+        t.found = false;
+    }
     if (!t.activeDuty) {
         if (t.numresets >= 10000) {
             break;
