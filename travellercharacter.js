@@ -199,6 +199,24 @@ s.navy = {
         if (attributes.education >= 9) { dm += 2; }
         return dm;
     },
+    survivalThrow: 5,
+    survivalDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 7) { dm += 2; }
+        return dm;
+    },
+    commissionThrow: 10,
+    commissionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.social >= 9) { dm += 1; }
+        return dm;
+    },
+    promotionThrow: 8,
+    promotionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.education >= 8) { dm += 1; }
+        return dm;
+    },
     getServiceSkills: function () { return []; },
     checkSurvival: function () {
         var dm = 0;
@@ -344,6 +362,24 @@ s.marines = {
         var dm = 0;
         if (attributes.intelligence >= 8) { dm += 1; }
         if (attributes.strength >= 8) { dm += 2; }
+        return dm;
+    },
+    survivalThrow: 6,
+    survivalDM: function (attributes) {
+        var dm = 0;
+        if (attributes.endurance >= 8) { dm += 2; }
+        return dm;
+    },
+    commissionThrow: 9,
+    commissionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.education >= 7) { dm += 1; }
+        return dm;
+    },
+    promotionThrow: 9,
+    promotionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.social >= 8) { dm += 1; }
         return dm;
     },
     getServiceSkills: function () { return ['Cutlass']; },
@@ -502,6 +538,24 @@ s.army = {
         if (attributes.endurance >= 5) { dm += 2; }
         return dm;
     },
+    survivalThrow: 5,
+    survivalDM: function (attributes) {
+        var dm = 0;
+        if (attributes.education >= 5) { dm += 2; }
+        return dm;
+    },
+    commissionThrow: 5,
+    commissionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.endurance >= 7) { dm += 1; }
+        return dm;
+    },
+    promotionThrow: 6,
+    promotionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.education >= 7) { dm += 1; }
+        return dm;
+    },
     getServiceSkills: function () { return ['Rifle']; },
     checkSurvival: function () {
         var dm = 0;
@@ -654,6 +708,12 @@ s.scouts = {
         if (attributes.strength >= 8) { dm += 2; }
         return dm;
     },
+    survivalThrow: 7,
+    survivalDM: function (attributes) {
+        var dm = 0;
+        if (attributes.endurance >= 9) { dm += 2; }
+        return dm;
+    },
     getServiceSkills: function () { return ['Pilot']; },
     checkSurvival: function () {
         var dm = 0;
@@ -776,6 +836,24 @@ s.merchants = {
         var dm = 0;
         if (attributes.strength >= 7) { dm += 1; }
         if (attributes.intelligence >= 6) { dm += 2; }
+        return dm;
+    },
+    survivalThrow: 5,
+    survivalDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 7) { dm += 2; }
+        return dm;
+    },
+    commissionThrow: 4,
+    commissionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 6) { dm += 1; }
+        return dm;
+    },
+    promotionThrow: 10,
+    promotionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 9) { dm += 1; }
         return dm;
     },
     getServiceSkills: function () { return []; },
@@ -932,6 +1010,12 @@ s.other = {
     enlistmentThrow: 3,
     enlistmentDM: function (attributes) {
         var dm = 0;
+        return dm;
+    },
+    survivalThrow: 5,
+    survivalDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 9) { dm += 2; }
         return dm;
     },
     getServiceSkills: function () { return []; },
