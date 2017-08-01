@@ -1271,6 +1271,8 @@ t.debugHistory = function(text) {
     }
 }
 t.drafted = false;
+t.minTerms = 1;
+t.maxTerms = 99;
 t.determineService = function() {
     if (t.urlParam('history') == 'verbose') {
         t.showHistory = 'verbose';
@@ -1281,6 +1283,14 @@ t.determineService = function() {
     }
     if (t.urlParam('vehicles') != '') {
         t.vehicles = t.urlParam('vehicles');
+    }
+    if (t.urlParam('minterms') != '') {
+        t.minTerms = +t.urlParam('minterms');
+        t.debugHistory('Min terms ' + t.minTerms);
+    }
+    if (t.urlParam('maxterms') != '') {
+        t.maxTerms = +t.urlParam('maxterms');
+        t.debugHistory('Max terms ' + t.maxTerms);
     }
     t.verboseHistory('Rolled attributes: ' + t.getAttrString());
     // In which service should we try to enlist?
@@ -1513,7 +1523,10 @@ t.doReenlistment = function () {
     var reenlistRoll = roll(2);
     t.verboseHistory('Reenlistment roll ' + reenlistRoll + ' vs ' +
                    s[t.service].reenlistThrow);
-    if (reenlistRoll == 12) {
+    if (t.terms == t.maxTerms) {
+        t.history.push('Reached selected maximum number of terms, skipping re-enlistment');
+        t.activeDuty = false;
+    } else if (reenlistRoll == 12) {
         t.history.push('Manditory reenlistment for ' +
             intToOrdinal(t.terms + 1) + ' term.');
     } else if (t.terms >= 7) {
@@ -1524,22 +1537,21 @@ t.doReenlistment = function () {
         t.activeDuty = false;
         t.history.push('Denied reenlistment after ' +
             intToOrdinal(t.terms) + ' term.');
-    } else if (reenlistRoll >= s[t.service].reenlistThrow) {
-        if (roll(2) >= 10 && (t.hunt !== 'skill' || t.found)) {
-            if (t.terms < 5) {
-                t.activeDuty = false;
-                t.history.push('Chose not to reenlist after ' +
-                    intToOrdinal(t.terms) + ' term.');
-            } else {
-                t.activeDuty = false;
-                t.retired = true;
-                t.history.push('Retired after ' +
-                    intToOrdinal(t.terms) + ' term.');
-            }
+    } else if (t.terms >= t.minTerms && roll(2) >= 10 &&
+               (t.hunt !== 'skill' || t.found)) {
+        if (t.terms < 5) {
+            t.activeDuty = false;
+            t.history.push('Chose not to reenlist after ' +
+                intToOrdinal(t.terms) + ' term.');
         } else {
-            t.history.push('Voluntarily reenlisted for ' +
-                intToOrdinal(t.terms + 1) + ' term.');
+            t.activeDuty = false;
+            t.retired = true;
+            t.history.push('Retired after ' +
+                intToOrdinal(t.terms) + ' term.');
         }
+    } else {
+        t.history.push('Voluntarily reenlisted for ' +
+                       intToOrdinal(t.terms + 1) + ' term.');
     }
 };
 t.ageAttribute = function(attrib, req, reduction) {
@@ -1623,6 +1635,11 @@ t.getNobleTitle = function () {
         default:
             return '';
     }
+};
+t.toStringFail = function () {
+    return (function() {
+            return 'Failed to generate after ' + t.maxchars + ' attempts\n';
+        }).call(this);
 };
 t.toString = function () {
     return (function() {
@@ -1766,36 +1783,45 @@ t.reset = function() {
 }
 
 t.hunt = t.urlParam('hunt');
+t.failed = false;
+t.string = '';
+t.maxchars = 10000;
+
+if (t.urlParam('maxchars') != '') {
+    t.maxchars = +t.urlParam('maxchars');
+}
 
 while (t.activeDuty && (! t.deceased)) {
     t.doServiceTerm();
     t.doAging();
     if (! t.deceased) {
+        if (t.hunt == 'skill') {
+            var level = 1;
+            var skill = t.urlParam('skill');
+            if (t.urlParam('level') !== '') {
+               level = t.urlParam('level');
+            }
+            t.found = t.checkSkillLevel(skill, level); 
+            t.debugHistory('Hunting for ' + skill + '-' + level +
+                           (t.found ? '' : ' not') + ' found');
+        }
         t.doReenlistment();
     } else {
         t.found = false;
-    }
-    if (t.hunt == 'skill') {
-        var level = 1;
-        var skill = t.urlParam('skill');
-        if (t.urlParam('level') !== '') {
-           level = t.urlParam('level');
+        if (t.minTerms > 1) {
+            // don't keep this one if looking for min terms
+            t.terms = 0;
         }
-        t.found = t.checkSkillLevel(skill, level); 
-        t.debugHistory('Hunting for ' + skill + '-' + level +
-                       (t.found ? '' : ' not') + ' found');
     }
     if (!t.activeDuty && !t.deceased) {
         t.musterOut();
     }
-    if (t.deceased) {
-        t.found = false;
-    }
     if (!t.activeDuty) {
-        if (t.numresets >= 10000) {
+        if (t.numresets >= t.maxchars) {
+            t.failed = true;
             break;
         }
-        if (t.urlParam('hunt') !== '' && !t.found) {
+        if (t.terms < t.minTerms || t.urlParam('hunt') !== '' && !t.found) {
             t.verboseHistory('Resetting');
             t.reset();
             t.cheat = true;
@@ -1803,7 +1829,12 @@ while (t.activeDuty && (! t.deceased)) {
     }
 }
 
-console.log(t.toString());
-return t.toString();
+if (!t.failed) {
+    console.log(t.toString());
+    return t.toString();
+} else {
+    console.log(t.toStringFail());
+    return t.toStringFail();
+}
 
 } // End wrapper function travellerCharacterGenerator()
