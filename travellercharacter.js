@@ -46,6 +46,10 @@
 // level=
 //     when used with hunt=skill, specifies the level of skill sought
 //
+//
+// vehicles=
+//     dole out vehicle skills as one of 1977, 1981, TTB, or ST
+//     default is as TTB
 function travellerCharacter(output) {
 // output is 'text', 'html', or 'JSON'.
 
@@ -55,7 +59,7 @@ String.prototype.capitalize = function() {
 };
 
 function rndInt(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function arnd(a) {
@@ -122,13 +126,16 @@ function generateGender() {
 }
 
 //------------------------ Cascade Skills ------------------------//
-function cascadeBlade(skills) {
-    // Call like cascadeBlade(t.skills)
+function cascadeBlade() {
+    // Call like cascadeBlade.call(t)
     var blades = ['Dagger', 'Foil', 'Sword', 'Cutlass', 'Broadsword', 'Bayonet', 'Spear', 'Halberd', 'Pike', 'Cudgel'];
     var knownBlades = [];
-    for (var i = 0, limit = skills.length; i < limit; i++) {
-        if (blades.indexOf(skills[i][0]) > -1) {
-            knownBlades.push(skills[i][0]);
+    if (this.urlParam('cascade') == 'skip') {
+        return 'Blade';
+    }
+    for (var i = 0, limit = this.skills.length; i < limit; i++) {
+        if (blades.indexOf(this.skills[i][0]) > -1) {
+            knownBlades.push(this.skills[i][0]);
         }
     }
     if (knownBlades.length > 0) {
@@ -137,13 +144,16 @@ function cascadeBlade(skills) {
         return arnd(blades);
     }
 }
-function cascadeGun(skills) {
-    // Call like cascadeGun(t.skills)
+function cascadeGun() {
+    // Call like cascadeGun.call(t)
     var guns = ['Body Pistol', 'Auto Pistol', 'Revolver', 'Carbine', 'Rifle', 'Auto Rifle', 'Shotgun', 'SMG', 'Laser Carbine', 'Laser Rifle'];
     var knownGuns = [];
-    for (var i = 0, limit = skills.length; i < limit; i++) {
-        if (guns.indexOf(skills[i][0]) > -1) {
-            knownGuns.push(skills[i][0]);
+    if (this.urlParam('cascade') == 'skip') {
+        return 'Gun';
+    }
+    for (var i = 0, limit = this.skills.length; i < limit; i++) {
+        if (guns.indexOf(this.skills[i][0]) > -1) {
+            knownGuns.push(this.skills[i][0]);
         }
     }
     if (knownGuns.length > 0) {
@@ -152,13 +162,16 @@ function cascadeGun(skills) {
         return arnd(guns);
     }
 }
-function cascadeVehicle(skills) {
-    // Call like cascadeVehicle(t.skills)
+function cascadeVehicle() {
+    // Call like cascadeVehicle.call(t)
     var vehicles = ['Prop-Driven Aircraft', 'Jet-Driven Aircraft', 'Helicopter', 'Grav Vehicle', 'Tracked Vehicle', 'Wheeled Vehicle', 'Large Watercraft', 'Small Watercraft', 'Hovercraft', 'Submersible'];
     var knownVehicles = [];
-    for (var i = 0, limit = skills.length; i < limit; i++) {
-        if (vehicles.indexOf(skills[i][0]) > -1) {
-            knownVehicles.push(skills[i][0]);
+    if (this.urlParam('cascade') == 'skip') {
+        return 'Vehicle';
+    }
+    for (var i = 0, limit = this.skills.length; i < limit; i++) {
+        if (vehicles.indexOf(this.skills[i][0]) > -1) {
+            knownVehicles.push(this.skills[i][0]);
         }
     }
     if (knownVehicles.length > 0) {
@@ -184,6 +197,24 @@ s.navy = {
         var dm = 0;
         if (attributes.intelligence >= 8) { dm += 1; }
         if (attributes.education >= 9) { dm += 2; }
+        return dm;
+    },
+    survivalThrow: 5,
+    survivalDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 7) { dm += 2; }
+        return dm;
+    },
+    commissionThrow: 10,
+    commissionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.social >= 9) { dm += 1; }
+        return dm;
+    },
+    promotionThrow: 8,
+    promotionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.education >= 8) { dm += 1; }
         return dm;
     },
     getServiceSkills: function () { return []; },
@@ -294,8 +325,8 @@ s.navy = {
                     case 2: this.addSkill('Vacc Suit'); break;
                     case 3: this.addSkill('Fwd Obsvr'); break;
                     case 4: this.addSkill('Gunnery'); break;
-                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
-                    default: this.addSkill(cascadeGun(this.skills));
+                    case 5: this.addSkill(cascadeBlade.call(this)); break;
+                    default: this.addSkill(cascadeGun.call(this));
                 }
                 break;
             case 3:
@@ -331,6 +362,24 @@ s.marines = {
         var dm = 0;
         if (attributes.intelligence >= 8) { dm += 1; }
         if (attributes.strength >= 8) { dm += 2; }
+        return dm;
+    },
+    survivalThrow: 6,
+    survivalDM: function (attributes) {
+        var dm = 0;
+        if (attributes.endurance >= 8) { dm += 2; }
+        return dm;
+    },
+    commissionThrow: 9,
+    commissionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.education >= 7) { dm += 1; }
+        return dm;
+    },
+    promotionThrow: 9,
+    promotionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.social >= 8) { dm += 1; }
         return dm;
     },
     getServiceSkills: function () { return ['Cutlass']; },
@@ -431,27 +480,37 @@ s.marines = {
                     case 3: this.improveAttribute('endurance', 1); break;
                     case 4: this.addSkill('Gambling'); break;
                     case 5: this.addSkill('Brawling'); break;
-                    default: this.addSkill(cascadeBlade(this.skills));
+                    default: this.addSkill(cascadeBlade.call(this));
                 }
                 break;
             case 2:
                 switch(roll(1)) {
-                    case 1: this.addSkill('ATV'); break;
+                    case 1: if (this.vehicles != '1981') {
+                            this.addSkill('ATV');
+                        } else {
+                            this.addSkill(cascadeVehicle.call(this));
+                        }
+                        break;
                     case 2: this.addSkill('Vacc Suit'); break;
-                    case 3: this.addSkill(cascadeBlade(this.skills)); break;
-                    case 4: this.addSkill(cascadeGun(this.skills)); break;
-                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
-                    default: this.addSkill(cascadeGun(this.skills));
+                    case 3: this.addSkill(cascadeBlade.call(this)); break;
+                    case 4: this.addSkill(cascadeGun.call(this)); break;
+                    case 5: this.addSkill(cascadeBlade.call(this)); break;
+                    default: this.addSkill(cascadeGun.call(this));
                 }
                 break;
             case 3:
                 switch(roll(1)) {
-                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
+                    case 1: if (this.vehicles == '1977') {
+                            this.addSkill('ATV');
+                        } else {
+                            this.addSkill(cascadeVehicle.call(this));
+                        }
+                        break;
                     case 2: this.addSkill('Mechanical'); break;
                     case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Tactics'); break;
-                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
-                    default: this.addSkill(cascadeGun(this.skills));
+                    case 5: this.addSkill(cascadeBlade.call(this)); break;
+                    default: this.addSkill(cascadeGun.call(this));
                 }
                 break;
             case 4:
@@ -477,6 +536,24 @@ s.army = {
         var dm = 0;
         if (attributes.dexterity >= 6) { dm += 1; }
         if (attributes.endurance >= 5) { dm += 2; }
+        return dm;
+    },
+    survivalThrow: 5,
+    survivalDM: function (attributes) {
+        var dm = 0;
+        if (attributes.education >= 5) { dm += 2; }
+        return dm;
+    },
+    commissionThrow: 5,
+    commissionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.endurance >= 7) { dm += 1; }
+        return dm;
+    },
+    promotionThrow: 6,
+    promotionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.education >= 7) { dm += 1; }
         return dm;
     },
     getServiceSkills: function () { return ['Rifle']; },
@@ -578,22 +655,32 @@ s.army = {
                 break;
             case 2:
                 switch(roll(1)) {
-                    case 1: this.addSkill('ATV'); break;
+                    case 1: if (this.vehicles != '1981') {
+                            this.addSkill('ATV');
+                        } else {
+                            this.addSkill(cascadeVehicle.call(this));
+                        }
+                        break;
                     case 2: this.addSkill('Air/Raft'); break;
-                    case 3: this.addSkill(cascadeGun(this.skills)); break;
+                    case 3: this.addSkill(cascadeGun.call(this)); break;
                     case 4: this.addSkill('Fwd Obsvr'); break;
-                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
-                    default: this.addSkill(cascadeGun(this.skills));
+                    case 5: this.addSkill(cascadeBlade.call(this)); break;
+                    default: this.addSkill(cascadeGun.call(this));
                 }
                 break;
             case 3:
                 switch(roll(1)) {
-                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
+                    case 1: if (this.vehicles == '1977') {
+                            this.addSkill('ATV');
+                        } else {
+                            this.addSkill(cascadeVehicle.call(this));
+                        }
+                        break;
                     case 2: this.addSkill('Mechanical'); break;
                     case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Tactics'); break;
-                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
-                    default: this.addSkill(cascadeGun(this.skills));
+                    case 5: this.addSkill(cascadeBlade.call(this)); break;
+                    default: this.addSkill(cascadeGun.call(this));
                 }
                 break;
             case 4:
@@ -619,6 +706,12 @@ s.scouts = {
         var dm = 0;
         if (attributes.intelligence >= 6) { dm += 1; }
         if (attributes.strength >= 8) { dm += 2; }
+        return dm;
+    },
+    survivalThrow: 7,
+    survivalDM: function (attributes) {
+        var dm = 0;
+        if (attributes.endurance >= 9) { dm += 2; }
         return dm;
     },
     getServiceSkills: function () { return ['Pilot']; },
@@ -692,7 +785,7 @@ s.scouts = {
                     case 3: this.improveAttribute('endurance', 1); break;
                     case 4: this.improveAttribute('intelligence', 1); break;
                     case 5: this.improveAttribute('education', 1); break;
-                    default: this.addSkill(cascadeGun(this.skills));
+                    default: this.addSkill(cascadeGun.call(this));
                 }
                 break;
             case 2:
@@ -707,7 +800,12 @@ s.scouts = {
                 break;
             case 3:
                 switch(roll(1)) {
-                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
+                    case 1: if (this.vehicles == '1977') {
+                            this.addSkill('Air/Raft');
+                        } else {
+                            this.addSkill(cascadeVehicle.call(this));
+                        }
+                        break;
                     case 2: this.addSkill('Mechanical'); break;
                     case 3: this.addSkill('Electronics'); break;
                     case 4: this.addSkill('Jack-o-T'); break;
@@ -738,6 +836,24 @@ s.merchants = {
         var dm = 0;
         if (attributes.strength >= 7) { dm += 1; }
         if (attributes.intelligence >= 6) { dm += 2; }
+        return dm;
+    },
+    survivalThrow: 5,
+    survivalDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 7) { dm += 2; }
+        return dm;
+    },
+    commissionThrow: 4,
+    commissionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 6) { dm += 1; }
+        return dm;
+    },
+    promotionThrow: 10,
+    promotionDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 9) { dm += 1; }
         return dm;
     },
     getServiceSkills: function () { return []; },
@@ -844,18 +960,23 @@ s.merchants = {
                     case 2: this.improveAttribute('dexterity', 1); break;
                     case 3: this.improveAttribute('endurance', 1); break;
                     case 4: this.improveAttribute('strength', 1); break;
-                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
+                    case 5: this.addSkill(cascadeBlade.call(this)); break;
                     default: this.addSkill('Bribery');
                 }
                 break;
             case 2:
                 switch(roll(1)) {
-                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
+                    case 1: if (this.vehicles == '1977') {
+                            this.improveAttribute('strength', 1);
+                        } else {
+                            this.addSkill(cascadeVehicle.call(this));
+                        }
+                        break;
                     case 2: this.addSkill('Vacc Suit'); break;
                     case 3: this.addSkill('Jack-o-T'); break;
                     case 4: this.addSkill('Steward'); break;
                     case 5: this.addSkill('Electronics'); break;
-                    default: this.addSkill(cascadeGun(this.skills));
+                    default: this.addSkill(cascadeGun.call(this));
                 }
                 break;
             case 3:
@@ -889,6 +1010,12 @@ s.other = {
     enlistmentThrow: 3,
     enlistmentDM: function (attributes) {
         var dm = 0;
+        return dm;
+    },
+    survivalThrow: 5,
+    survivalDM: function (attributes) {
+        var dm = 0;
+        if (attributes.intelligence >= 9) { dm += 2; }
         return dm;
     },
     getServiceSkills: function () { return []; },
@@ -953,19 +1080,24 @@ s.other = {
                     case 1: this.improveAttribute('strength', 1); break;
                     case 2: this.improveAttribute('dexterity', 1); break;
                     case 3: this.improveAttribute('endurance', 1); break;
-                    case 4: this.addSkill(cascadeBlade(this.skills)); break;
+                    case 4: this.addSkill(cascadeBlade.call(this)); break;
                     case 5: this.addSkill('Brawling'); break;
                     default: this.improveAttribute('social', -1);
                 }
                 break;
             case 2:
                 switch(roll(1)) {
-                    case 1: this.addSkill(cascadeVehicle(this.skills)); break;
+                    case 1: if (this.vehicles == '1977') {
+                            this.addSkill('Forgery');
+                        } else {
+                            this.addSkill(cascadeVehicle.call(this));
+                        }
+                        break;
                     case 2: this.addSkill('Gambling'); break;
                     case 3: this.addSkill('Brawling'); break;
                     case 4: this.addSkill('Bribery'); break;
-                    case 5: this.addSkill(cascadeBlade(this.skills)); break;
-                    default: this.addSkill(cascadeGun(this.skills));
+                    case 5: this.addSkill(cascadeBlade.call(this)); break;
+                    default: this.addSkill(cascadeGun.call(this));
                 }
                 break;
             case 3:
@@ -994,6 +1126,7 @@ s.other = {
 
 //------------ "t" object holds Traveller character definitions ------------//
 var t = {};
+t.cheat = false;
 t.urlParam = function(name, w){
     w = w || window;
     var rx = new RegExp('[\&|\?]'+name+'=([^\&\#]+)'),
@@ -1019,9 +1152,10 @@ t.TAS = false;
 t.mortgage = 40;
 t.bladeBenefit = '';
 t.gunBenefit = '';
+t.vehicles = 'TTB';
 t.doBladeBenefit = function () {
     if (t.bladeBenefit == '') {
-        t.bladeBenefit = cascadeBlade(t.skills);
+        t.bladeBenefit = cascadeBlade.call(t);
         t.addBenefit(t.bladeBenefit);
     } else {
         t.addSkill(t.bladeBenefit);
@@ -1029,7 +1163,7 @@ t.doBladeBenefit = function () {
 }
 t.doGunBenefit = function () {
     if (t.gunBenefit == '') {
-        t.gunBenefit = cascadeGun(t.skills);
+        t.gunBenefit = cascadeGun.call(t);
         t.addBenefit(t.gunBenefit);
     } else {
         t.addSkill(t.gunBenefit);
@@ -1076,12 +1210,18 @@ t.checkSkillLevel = function (skill, level) {
     }
     return t.skills[i][1] >= level;
 }
+t.tables = ['personal development', 'service skills', 'advanced education',
+            'advanced education 8+'];
 t.whichSkillTable = function() {
+    var table;
     if (this.urlParam('personal') == 'always') {
-        return rndInt(1, 3 + (this.attributes.education >= 8 ? 1 : 0));
+        table = rndInt(1, 3 + (this.attributes.education >= 8 ? 1 : 0));
     } else {
-        return rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0);
+        table =  rndInt(1, 3) + (this.attributes.education >= 8 ? 1 : 0);
     }
+    this.debugHistory('Skill from table ' + table + ' ' +
+                      this.tables[table - 1]);
+    return table;
 }
 t.addSkill = function (skill, skillLevel) {
     var i = t.checkSkill(skill);
@@ -1131,6 +1271,8 @@ t.debugHistory = function(text) {
     }
 }
 t.drafted = false;
+t.minTerms = 1;
+t.maxTerms = 99;
 t.determineService = function() {
     if (t.urlParam('history') == 'verbose') {
         t.showHistory = 'verbose';
@@ -1138,6 +1280,17 @@ t.determineService = function() {
         t.showHistory = 'debug';
     } else if (t.urlParam('history') == 'none') {
         t.showHistory = 'none';
+    }
+    if (t.urlParam('vehicles') != '') {
+        t.vehicles = t.urlParam('vehicles');
+    }
+    if (t.urlParam('minterms') != '') {
+        t.minTerms = +t.urlParam('minterms');
+        t.debugHistory('Min terms ' + t.minTerms);
+    }
+    if (t.urlParam('maxterms') != '') {
+        t.maxTerms = +t.urlParam('maxterms');
+        t.debugHistory('Max terms ' + t.maxTerms);
     }
     t.verboseHistory('Rolled attributes: ' + t.getAttrString());
     // In which service should we try to enlist?
@@ -1192,6 +1345,7 @@ t.determineService = function() {
     var serviceSkills = [];
     var en = roll(2);
     if (minscore == 9999) {
+        t.cheat = true;
         t.history.push('Automatic enlistment in ' +
             s[preferredService].serviceName);
         serviceSkills = s[preferredService].getServiceSkills();
@@ -1214,6 +1368,7 @@ t.determineService = function() {
         t.drafted = true;
         t.history.push('Enlistment denied.');
         if (minscore == 8888) {
+            t.cheat = true;
             draftService = preferredService;
         } else {
             draftService = s.draft();
@@ -1292,8 +1447,11 @@ t.musterOut = function () {
     var looking = false;
     var found = false;
     t.musterStrategy = t.urlParam('muster');
-    if (t.urlParam('cash') !== '') {
-        maxCash = t.urlParam('cash');
+    if (t.urlParam('maxcash') !== '') {
+        maxCash = t.urlParam('maxcash');
+        if (maxCash > 3) {
+            t.cheat |= true;
+        }
     }
     t.verboseHistory('--------------------------------------------');
     t.verboseHistory('Mustered Out');
@@ -1313,7 +1471,7 @@ t.musterOut = function () {
                   t.musterStrategy == 'split';
     }
     for (var i = 1, limit = musterRolls; i <= limit; i++) {
-        if (cashUsed <= maxCash && (!looking || t.found || found ||
+        if (cashUsed < maxCash && (!looking || t.found || found ||
             (t.musterStrategy == 'split' && (i % 2) == 1))) {
             var cash = s[t.service].musterCash[roll(1) + cashDM]
             t.credits += cash;
@@ -1365,7 +1523,10 @@ t.doReenlistment = function () {
     var reenlistRoll = roll(2);
     t.verboseHistory('Reenlistment roll ' + reenlistRoll + ' vs ' +
                    s[t.service].reenlistThrow);
-    if (reenlistRoll == 12) {
+    if (t.terms == t.maxTerms) {
+        t.history.push('Reached selected maximum number of terms, skipping re-enlistment');
+        t.activeDuty = false;
+    } else if (reenlistRoll == 12) {
         t.history.push('Manditory reenlistment for ' +
             intToOrdinal(t.terms + 1) + ' term.');
     } else if (t.terms >= 7) {
@@ -1376,22 +1537,21 @@ t.doReenlistment = function () {
         t.activeDuty = false;
         t.history.push('Denied reenlistment after ' +
             intToOrdinal(t.terms) + ' term.');
-    } else if (reenlistRoll >= s[t.service].reenlistThrow) {
-        if (roll(2) >= 10 && (t.hunt !== 'skill' || t.found)) {
-            if (t.terms < 5) {
-                t.activeDuty = false;
-                t.history.push('Chose not to reenlist after ' +
-                    intToOrdinal(t.terms) + ' term.');
-            } else {
-                t.activeDuty = false;
-                t.retired = true;
-                t.history.push('Retired after ' +
-                    intToOrdinal(t.terms) + ' term.');
-            }
+    } else if (t.terms >= t.minTerms && roll(2) >= 10 &&
+               (t.hunt !== 'skill' || t.found)) {
+        if (t.terms < 5) {
+            t.activeDuty = false;
+            t.history.push('Chose not to reenlist after ' +
+                intToOrdinal(t.terms) + ' term.');
         } else {
-            t.history.push('Voluntarily reenlisted for ' +
-                intToOrdinal(t.terms + 1) + ' term.');
+            t.activeDuty = false;
+            t.retired = true;
+            t.history.push('Retired after ' +
+                intToOrdinal(t.terms) + ' term.');
         }
+    } else {
+        t.history.push('Voluntarily reenlisted for ' +
+                       intToOrdinal(t.terms + 1) + ' term.');
     }
 };
 t.ageAttribute = function(attrib, req, reduction) {
@@ -1476,11 +1636,15 @@ t.getNobleTitle = function () {
             return '';
     }
 };
+t.toStringFail = function () {
+    return (function() {
+            return 'Failed to generate after ' + t.maxchars + ' attempts\n';
+        }).call(this);
+};
 t.toString = function () {
     return (function() {
             var parms = t.urlParams();
-            if (parms != '' && parms != 'history=debug' &&
-                parms != 'history=verbose' && parms != 'history=none') {
+            if (t.cheat || t.showHistory == 'debug') {
                 return 'URL Parms: ' + parms + '\n\n';
             } else {
                 return '';
@@ -1619,40 +1783,58 @@ t.reset = function() {
 }
 
 t.hunt = t.urlParam('hunt');
+t.failed = false;
+t.string = '';
+t.maxchars = 10000;
+
+if (t.urlParam('maxchars') != '') {
+    t.maxchars = +t.urlParam('maxchars');
+}
 
 while (t.activeDuty && (! t.deceased)) {
     t.doServiceTerm();
     t.doAging();
     if (! t.deceased) {
+        if (t.hunt == 'skill') {
+            var level = 1;
+            var skill = t.urlParam('skill');
+            if (t.urlParam('level') !== '') {
+               level = t.urlParam('level');
+            }
+            t.found = t.checkSkillLevel(skill, level); 
+            t.debugHistory('Hunting for ' + skill + '-' + level +
+                           (t.found ? '' : ' not') + ' found');
+        }
         t.doReenlistment();
     } else {
         t.found = false;
-    }
-    if (t.hunt == 'skill') {
-        var level = 1;
-        var skill = t.urlParam('skill');
-        if (t.urlParam('level') !== '') {
-           level = t.urlParam('level');
+        if (t.minTerms > 1) {
+            // don't keep this one if looking for min terms
+            t.terms = 0;
         }
-        t.found = t.checkSkillLevel(skill, level); 
-        t.debugHistory('Hunting for ' + skill + '-' + level +
-                       (t.found ? '' : ' not') + ' found');
     }
     if (!t.activeDuty && !t.deceased) {
         t.musterOut();
     }
     if (!t.activeDuty) {
-        if (t.numresets >= 10000) {
+        if (t.numresets >= t.maxchars) {
+            t.failed = true;
             break;
         }
-        if (t.urlParam('hunt') !== '' && !t.found) {
+        if (t.terms < t.minTerms || t.urlParam('hunt') !== '' && !t.found) {
             t.verboseHistory('Resetting');
             t.reset();
+            t.cheat = true;
         }
     }
 }
 
-console.log(t.toString());
-return t.toString();
+if (!t.failed) {
+    console.log(t.toString());
+    return t.toString();
+} else {
+    console.log(t.toStringFail());
+    return t.toStringFail();
+}
 
 } // End wrapper function travellerCharacterGenerator()
